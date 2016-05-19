@@ -1,16 +1,16 @@
-import collections, itertools, copy, Queue
+import collections, itertools, copy
 import numpy, scipy, math, random
 import os, sys, time, importlib
 import tokenize, re, string
 import json, unicodedata
-import thread
 
 # Import Constants class defined in "./lib/constants.py"
 # need to create a Constants object with an initialization
 # argument that is the path of the folder __main__.py is in
 # because of some weird command line thing
 import lib.constants as c
-c.init(os.path.dirname(__file__))
+import bin
+c.init(os.path.dirname(os.path.realpath(__file__)))
 
 ##
 # Note to Bruno/Alex
@@ -19,7 +19,7 @@ c.init(os.path.dirname(__file__))
 # if you do not want to specify that file name from the command line.
 # Choices include "process_recipes", "query_online_db", "write_recipes"
 ##
-DEFAULT_EXE_CHOICE = "process_recipes"
+DEFAULT_EXE_CHOICE = "setup"
 
 ##
 # Function: main
@@ -27,10 +27,11 @@ DEFAULT_EXE_CHOICE = "process_recipes"
 # argv = ["main.py", <executable>, <args..>]
 # <executable> is one of: "process_recipes", "query_online_db", "write_recipes"
 def main(argv):
-	print "In __main__.py, c.PATH_TO_ROOT: ", c.PATH_TO_ROOT
-	print "In __main__.py, os.path.dirname(__file__): ", os.path.dirname(__file__)
+	print("In __main__.py, c.PATH_TO_ROOT: ", c.PATH_TO_ROOT)
+	print("In __main__.py, os.path.dirname(__file__): ", os.path.dirname(os.path.realpath(__file__)))
 
 	exe_name = argv[c.EXE_ARG_POS]
+	print("exe_name: ", exe_name)
 	exe = importlib.import_module("." + exe_name, "bin")
 	new_argv = [exe_name + ".py"] + argv[c.EXE_ARG_POS+1:]
 

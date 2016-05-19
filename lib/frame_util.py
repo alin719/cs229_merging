@@ -21,7 +21,12 @@ def AddVxAx(inFilename, outFilename):
     lastVID = 0
     frameCounter = 0
     vidDict = {}
-    for line in trajectoryFile.readlines():
+    lines = trajectoryFile.readlines()
+    numLines = len(lines)
+    lineCounter = 0
+    for line in lines:
+        if lineCounter % 10000 == 0:
+            print("Read line ", lineCounter, "/", numLines)
         curArray = line.split()
         curVID = int(curArray[0])
         curFrame = int(curArray[1])
@@ -46,6 +51,7 @@ def AddVxAx(inFilename, outFilename):
         outFile.write(writeString)
         frameCounter += 1
         lastVID = curVID
+        lineCounter += 1
     trajectoryFile.close()
     outFile.close()
     return vidDict
