@@ -54,6 +54,6 @@ def init(pathToRoot):
 
 	# Used by:
 	#  - main.py to direct execution to the proper executable in bin/
-	EXECUTABLES = ["setup", "sandbox"]
+	EXECUTABLES = ["setup", "sandbox", "visualize"]
 	EXE_ARG_POS = 1
 

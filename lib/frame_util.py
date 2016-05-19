@@ -14,6 +14,7 @@ import json, unicodedata
 from lib import constants as c
 import matplotlib.pyplot as plt
 from IPython import display
+from lib import vehicleclass as v
 
 FRAME_TIME = 0.1
 

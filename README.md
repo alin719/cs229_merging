@@ -16,7 +16,17 @@ not already in memory.  type = 'vid' or 'frame'
  the keys are Frame IDs and the values are an (X_DIV, Y_DIV, features)
  np array.  Features will be [x, y, Vx, Vy, Ax, Ay] of the vehicle
  at that point in the grid.
+- Grid size can be changed by modifying values in constants.py
 
+3) vehicleclass.py
+- Makes it easier/more clear than accessing array indices.  Currently
+the dictionaries are not stored as vehicles, but you can init a vehicle
+from any entry, and then pull info from that.  Future updates include
+using these directly in the dicts.
+
+TODO:
+- Write functions to save / load grids as txt files.
+- Clean this shit up.
 
  Recap:
  Current pipeline for loading grids is:
