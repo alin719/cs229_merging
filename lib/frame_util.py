@@ -5,6 +5,7 @@
 ##
 
 import collections, itertools, copy
+from copy import deepcopy
 import scipy, math, random
 import numpy as np
 import os, sys, time, importlib
@@ -94,3 +95,28 @@ def LoadDictFromTxt(filename, dictType):
             
     trajectoryFile.close()
     return outDict
+
+#Frame is passed in as a dictionary of vehicles, where
+#each vehicle has its full entry in the dict.
+MAX_X = 70
+MAX_Y = 2250
+X_DIV = 5
+Y_DIV = 10
+X_STEP = MAX_X/X_DIV
+Y_STEP = MAX_Y/Y_DIV
+def FrameToGrid(frame):
+    grid = np.zeros((X_DIV, Y_DIV, 6))
+    for vid in frame:
+        vehicleData = frame[vid]
+        veh = v.vehicle(vehicleData)
+        gridX = int(veh.getX() / X_STEP)
+        gridY = int(veh.getY() / Y_STEP)
+        print(veh.getX(), gridX, veh.getY(), gridY)
+        grid[gridX][gridY] = veh.getTrajectory()
+        print(gridX, gridY)
+    return deepcopy(grid)
+
+def GetGridsFromFrameDict(frameDict):
+    gridDict = {}
+    for i in frameDict:
+        frame = 

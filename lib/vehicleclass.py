@@ -30,3 +30,20 @@ class vehicle:
         self.timeHeadway = augArray[17]
         self.Vx = augArray[18]
         self.Ax = augArray[19]
+    
+    def getX(self):
+        return self.x
+    def getY(self):
+        return self.y
+    def getFrame(self):
+        return self.fid
+    def getVx(self):
+        return self.Vx
+    def getAx(self):
+        return self.Ax
+    def getVy(self):
+        return self.Vy
+    def getAy(self):
+        return self.Vy
+    def getTrajectory(self):
+        return [self.x, self.y, self.Vx, self.Vy, self.Ax, self.Ay]
