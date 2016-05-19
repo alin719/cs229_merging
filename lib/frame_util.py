@@ -12,6 +12,8 @@ import os, sys, time, importlib
 import tokenize, re, string
 import json, unicodedata
 from lib import constants as c
+import matplotlib.pyplot as plt
+from IPython import display
 
 FRAME_TIME = 0.1
 
@@ -26,7 +28,7 @@ def AddVxAx(inFilename, outFilename):
     numLines = len(lines)
     lineCounter = 0
     for line in lines:
-        if lineCounter % 10000 == 0:
+        if lineCounter % 30000 == 0:
             print("Read line ", lineCounter, "/", numLines)
         curArray = line.split()
         curVID = int(curArray[0])
@@ -98,25 +100,63 @@ def LoadDictFromTxt(filename, dictType):
 
 #Frame is passed in as a dictionary of vehicles, where
 #each vehicle has its full entry in the dict.
-MAX_X = 70
-MAX_Y = 2250
-X_DIV = 5
-Y_DIV = 10
-X_STEP = MAX_X/X_DIV
-Y_STEP = MAX_Y/Y_DIV
-def FrameToGrid(frame):
-    grid = np.zeros((X_DIV, Y_DIV, 6))
-    for vid in frame:
-        vehicleData = frame[vid]
-        veh = v.vehicle(vehicleData)
-        gridX = int(veh.getX() / X_STEP)
-        gridY = int(veh.getY() / Y_STEP)
-        print(veh.getX(), gridX, veh.getY(), gridY)
-        grid[gridX][gridY] = veh.getTrajectory()
-        print(gridX, gridY)
-    return deepcopy(grid)
-
 def GetGridsFromFrameDict(frameDict):
     gridDict = {}
     for i in frameDict:
-        frame = 
+        frame = frameDict[i]
+        grid = FrameToGrid(frame)
+        gridDict[i] = deepcopy(grid)
+    return gridDict
+
+def FrameToGrid(frame):
+    grid = np.zeros((c.X_DIV + 2, c.Y_DIV + 2, 6))
+    for vid in frame:
+        vehicleData = frame[vid]
+        veh = v.vehicle(vehicleData)
+        gridX = int(veh.getX() / c.X_STEP)
+        gridY = int(veh.getY() / c.Y_STEP)
+        grid[gridX][gridY] = veh.getTrajectory()
+    return grid
+
+def GetGridPoints(grid):
+    gflat = np.sum(grid, axis=2)
+    nz = np.nonzero(gflat)
+    nzx = nz[0]*c.X_STEP
+    nzy = nz[1]*c.Y_STEP
+    return nzx, nzy
+
+def AnimateFrames(frameDict):
+    #With a loaded frameDict, animates frames.
+    fig_size = plt.rcParams["figure.figsize"]
+     
+    print("Current size:", fig_size)
+     
+    # Set figure width to 12 and height to 9
+    fig_size[0] = 14
+    fig_size[1] = 7
+    plt.rcParams["figure.figsize"] = fig_size
+    plt.figure(1)
+
+    for i in range(int(len(frameDict)/2)):
+        curFrame = frameDict[100 + i*5]
+        plotFrame(curFrame, i)
+        plt.clf()
+
+def plotFrame(curFrame, fid):
+    x,y = getFramePoints(curFrame)    
+    plt.plot(y,70 - x, 'ro')
+    plt.title("t = " + str(fid))
+    plt.axis([0, 2250, 0, 70])
+    display.clear_output(wait=True)
+    display.display(plt.gcf())
+
+def getFramePoints(curFrame):
+    x = np.array([0]*len(curFrame))
+    y = np.array([0]*len(curFrame))
+    entryCounter = 0
+    for entry in curFrame:
+        x[entryCounter] = float(curFrame[entry][4])
+        y[entryCounter] = float(curFrame[entry][5])
+        entryCounter += 1
+    return x,y
+
