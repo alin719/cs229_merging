@@ -51,10 +51,11 @@ def findMergeEventRanges(filepath, LaneCol, MergeLane, VIDCol, FrameCol, TotFram
     #This will find, for each VID that merges, the start and end frames
     Data = np.loadtxt(filepath+'.txt')
     Firsts = findFirstInstances(Data, VIDCol)  
-    Starts = Firsts[:,FrameCol]
-    Ends = Starts + Firsts[:,TotFrameCol]
+    Mergers = Firsts[Firsts[:,LaneCol]==MergeLane]
+    Starts = Mergers[:,FrameCol]
+    Ends = Starts + Mergers[:,TotFrameCol]
     Ends.shape=(len(Ends),1)
-    IDStarts = Firsts[:,[VIDCol,FrameCol]]
+    IDStarts = Mergers[:,[VIDCol,FrameCol]]
     Ranges = np.append(IDStarts, Ends, axis=1)
     return Ranges
 
@@ -70,13 +71,28 @@ def findMergeEventRangesMin(filepath, LaneCol, MergeLane, VIDCol, FrameCol, TotF
     #This will find, for each VID that merges, the start and end frames based on the minimum number of frames any merge appears in
     Data = np.loadtxt(filepath+'.txt')
     Firsts = findFirstInstances(Data, VIDCol)  
-    Starts = Firsts[:,FrameCol]
-    Ends = Starts + min(Firsts[:,TotFrameCol])
+    Mergers = Firsts[Firsts[:,LaneCol]==MergeLane]
+    Starts = Mergers[:,FrameCol]
+    Ends = Starts + min(Mergers[:,TotFrameCol])
     Ends.shape=(len(Ends),1)
-    IDStarts = Firsts[:,[VIDCol,FrameCol]]
+    IDStarts = Mergers[:,[VIDCol,FrameCol]]
     Ranges = np.append(IDStarts, Ends, axis=1)
     return Ranges
 
-def findAndSaveMergeEventRanges(filepath, LaneCol, MergeLane, VIDCol, FrameCol, TotFrameCol):
+def findAndSaveMergeEventRangesMin(filepath, LaneCol, MergeLane, VIDCol, FrameCol, TotFrameCol):
     Ranges =  findMergeEventRangesMin(filepath, LaneCol, MergeLane, VIDCol, FrameCol, TotFrameCol)
     saveArrayTxt(filepath+'-mergerMinRanges'+'.txt', Ranges)
+    
+    
+def findAndSaveMergerStartTrajectories(filepath, VIDCol, LaneCol, MergeLane):
+    Data = np.loadtxt(filepath+'.txt')
+    Firsts = findFirstInstances(Data, VIDCol)    
+    Mergers = Firsts[Firsts[:,LaneCol]==MergeLane]
+    saveArrayTxt(filepath+'-mergerStartTrajectories'+'.txt', Mergers)
+    
+    
+    
+    
+    
+    
+    
