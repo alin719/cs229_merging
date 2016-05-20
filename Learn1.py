@@ -33,7 +33,7 @@ Following = 16-1
 Spacing = 17-1
 Headway = 18-1
 
-numUsing = 15
+numUsing = 100
 
 def getStartVals(filename):
     filepath = makePathMR(filename, '-mergerStartTrajectories')
@@ -76,7 +76,9 @@ def getX(filename, trainIDs, testIDs):
     Xtrain = np.array([])  
     Xtest = np.array([])
     it= 0
-    for row in MR[:numUsing]:
+    if not numUsing == 0:
+        MR = MR[:numUsing]
+    for row in MR:
         thisStart = start[it]
         if row[0] in trainIDs:
             Xtrain = getX2(row, Xtrain, dictOfGrids,thisStart)
@@ -92,7 +94,9 @@ def getY(filename, trainIDs, testIDs):
     MR = np.loadtxt(filepath, dtype='int')
     Ytrain = np.array([])    
     Ytest = np.array([])
-    for row in MR[:numUsing]:
+    if not numUsing == 0:
+        MR = MR[:numUsing]
+    for row in MR:
         if row[0] in trainIDs:
             Ytrain = getY2(row,Ytrain,IDDict[row[0]])
         else:
@@ -118,8 +122,6 @@ def makeTrainTestData(filepath, portionTrain):
 
 filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
 trainIDs, testIDs = makeTrainTestData(makePathMR(filename, '-mergerMinRanges'), .75)
-print(trainIDs)
-print(testIDs)
 Xtrain, Xtest =getX(filename, trainIDs, testIDs)
 print(Xtrain.shape)
 print(Xtest.shape)
@@ -129,6 +131,10 @@ print(ytest.shape)
 linmod1 = linear_model.LinearRegression()
 linmod1.fit(Xtrain, ytrain)
 predictions = linmod1.predict(Xtest)
-np.savetxt(makePathMR(filename)[:-4]+'PREDICTIONS' +numUsing+'.txt', predictions)
-np.savetxt(makePathMR(filename)[:-4]+'ACTUALS'+numUsing+'.txt', ytest)
-linmod1.score(Xtest,ytest)
+score = (linmod1.score(Xtest,ytest))
+check = (linmod1.score(Xtrain,ytrain))
+np.savetxt(makePathMR(filename, 'ACTUALS'+str(numUsing)+'.txt'), ytest)
+np.savetxt(makePathMR(filename,'PREDICTIONS' +str(numUsing) + '.txt'), predictions)
+np.savetxt(makePathMR(filename,'SCORE' +str(numUsing) + '.txt'), [score, check])
+
+
