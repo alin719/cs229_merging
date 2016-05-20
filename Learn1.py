@@ -12,6 +12,7 @@ import numpy as np
 import os
 from scipy import sparse
 from lib import constants
+import random
 
 VID = 1-1
 FID = 2-1
@@ -32,68 +33,102 @@ Following = 16-1
 Spacing = 17-1
 Headway = 18-1
 
+numUsing = 15
 
-numUsing = 10
-#def getStartVals(ID, dictd):
-    
+def getStartVals(filename):
+    filepath = makePathMR(filename, '-mergerStartTrajectories')
+    A = np.loadtxt(filepath)
+    return A[:,[LocalX,LocalY]]
+
+def getX2(row, X,dictOfGrids, initPos):
+    Xi = np.array([])
+    for frame in range(row[1],row[2]):
+        Xi = np.append(Xi,dictOfGrids[frame])
+    Xi = np.append(Xi, initPos)
+    Xi.shape = (1,len(Xi))
+    if  X.shape == (0,):
+        X = Xi
+    else:
+        X=np.append(X,Xi,axis=0)
+    return X
+
+def getY2(row, Y, dictOfFrames):
+    yi = np.array([])
+    for frame in range(row[1],row[2]):
+        yi = np.append(yi,dictOfFrames[frame][LocalX:LocalY])
+    yi.shape = (1,len(yi))
+    if Y.shape == (0,):
+        Y = yi
+    else:
+        Y = np.append(Y,yi,axis=0)
+    return Y
+
 #get the training examples
-def getX(filename):
+def getX(filename, trainIDs, testIDs):
     #filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
     path = os.getcwd()+'/'
     frameDict = futil.LoadDictFromTxt(path+filename, 'frame')
     dictOfGrids = futil.GetGridsFromFrameDict(frameDict)
-    a = len('aug_trajectories-0750am-0805am.txt')
-    MR = np.loadtxt(path+filename[:-a]+'mergeTrajectoryInfo/'+filename[(-a+4):-4]+'-mergerMinRanges.txt', dtype='int')
-    '''MR=MergeRanges. MR[:,1]=merge ids, MR[:,2]=start frame, MR[:,3] = end'''
-    X = np.array([])
-    #Lets just use the first 10 mergers for now
-    MR = MR[numUsing:2*numUsing]
-    for row in MR:
-        Xi = np.array([])
-        for frame in range(row[1],row[2]):
-            Xi = np.append(Xi,dictOfGrids[frame])
-        #initPos = getStartVals(ID)
-        #Xi = np.append(Xi, initPos)
-        print(X)
-        print(X.shape)
-        print(Xi)
-        Xi.shape = (1,len(Xi))
-        if  X.shape == (0,):
-            X = Xi
+    filepath = makePathMR(filename, '-mergerMinRanges')
+    MR = np.loadtxt(filepath, dtype='int')
+    '''MR=MergeRanges. MR[:,0]=merge ids, MR[:,1]=start frame, MR[:,2] = end'''
+    start = getStartVals(filename)    
+    Xtrain = np.array([])  
+    Xtest = np.array([])
+    it= 0
+    for row in MR[:numUsing]:
+        thisStart = start[it]
+        if row[0] in trainIDs:
+            Xtrain = getX2(row, Xtrain, dictOfGrids,thisStart)
         else:
-            X=np.append(X,Xi,axis=0)
-    return X
+            Xtest = getX2(row, Xtest, dictOfGrids, thisStart)
+        it += 1
+    return sparse.csr_matrix(Xtrain), sparse.csr_matrix(Xtest)
     
-def getY(filename):
+def getY(filename, trainIDs, testIDs):
     path = os.getcwd()+'/'
     IDDict = futil.LoadDictFromTxt(path+filename, 'vid')
-    a = len('aug_trajectories-0750am-0805am.txt')
-    MR = np.loadtxt(path+filename[:-a]+'mergeTrajectoryInfo/'+filename[(-a+4):-4]+'-mergerMinRanges.txt', dtype='int')
-    MR = MR[:numUsing]
-    Y = np.array([])    
-    for row in MR:
-        ID = row[0]
-        yi = np.array([])
-        dictOfFrames = IDDict[ID]
-        for frame in range(row[1],row[2]):
-            yi = np.append(yi,dictOfFrames[frame][LocalX:LocalY])
-        print(Y)
-        print(Y.shape)
-        print(yi)
-        yi.shape = (1,len(yi))
-        if Y.shape == (0,):
-            Y = yi
+    filepath = makePathMR(filename, '-mergerMinRanges')
+    MR = np.loadtxt(filepath, dtype='int')
+    Ytrain = np.array([])    
+    Ytest = np.array([])
+    for row in MR[:numUsing]:
+        if row[0] in trainIDs:
+            Ytrain = getY2(row,Ytrain,IDDict[row[0]])
         else:
-            Y = np.append(Y,yi,axis=0)
-    return Y
+            Ytest = getY2(row, Ytest,IDDict[row[0]])
+    return Ytrain, Ytest
     
-def getX2(filename):
+def makePathMR(filename, end):
+    path = os.getcwd()+'/'
+    a = len('aug_trajectories-0750am-0805am.txt')
+    return path+filename[:-a]+'mergeTrajectoryInfo/'+filename[(-a+4):-4]+end+'.txt'
+
+def makeTrainTestData(filepath, portionTrain):
+    #filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
+    filepath = makePathMR(filename, '-mergerMinRanges')
+    MR = np.loadtxt(filepath, dtype='int')
+    traintest = [[],[]]
+    for ID in MR[:,0]:
+        traintest[random.random() > portionTrain].append(ID)
+    train = traintest[0]
+    test = traintest[1]
+    return train, test
     
 
 filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
-Xtrain=getX(filename)
-ytrain=getY(filename)
-print(X.shape)
-print(y.shape)
+trainIDs, testIDs = makeTrainTestData(makePathMR(filename, '-mergerMinRanges'), .75)
+print(trainIDs)
+print(testIDs)
+Xtrain, Xtest =getX(filename, trainIDs, testIDs)
+print(Xtrain.shape)
+print(Xtest.shape)
+ytrain, ytest =getY(filename, trainIDs, testIDs)
+print(ytrain.shape)
+print(ytest.shape)
 linmod1 = linear_model.LinearRegression()
-linmod1.fit(X, y)
+linmod1.fit(Xtrain, ytrain)
+predictions = linmod1.predict(Xtest)
+np.savetxt(makePathMR(filename)[:-4]+'PREDICTIONS' +numUsing+'.txt', predictions)
+np.savetxt(makePathMR(filename)[:-4]+'ACTUALS'+numUsing+'.txt', ytest)
+linmod1.score(Xtest,ytest)
