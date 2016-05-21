@@ -13,8 +13,12 @@ EXE_ARG_POS = None
 DEFAULT_EXE_CHOICE = None
 MAX_X = 70
 MAX_Y = 2250
-X_DIV = 35
-Y_DIV = 200
+X_DIV = 14
+Y_DIV = 100
+MIN_GRID_X = 0
+MAX_GRID_X = 70
+MIN_GRID_Y = 150
+MAX_GRID_Y = 1500
 X_STEP = float(MAX_X/X_DIV)
 Y_STEP = float(MAX_Y/Y_DIV)
 
@@ -42,6 +46,10 @@ def init(pathToRoot):
 	global Y_DIVS
 	global X_STEP
 	global Y_STEP
+	global MIN_GRID_X
+	global MAX_GRID_X
+	global MIN_GRID_Y
+	global MAX_GRID_Y
 
 
 	# This is the absolute path of the recipe_writer folder on your computer.
