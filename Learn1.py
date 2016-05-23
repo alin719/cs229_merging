@@ -85,7 +85,7 @@ def getX(filename, trainIDs, testIDs):
         else:
             Xtest = getX2(row, Xtest, dictOfGrids, thisStart)
         it += 1
-    return sparse.csr_matrix(Xtrain), sparse.csr_matrix(Xtest)
+    return sparse.csr_matrix(np.ascontiguousarray(Xtrain)), sparse.csr_matrix(np.ascontiguousarray(Xtest))
     
 def getY(filename, trainIDs, testIDs):
     path = os.getcwd()+'/'
@@ -101,7 +101,7 @@ def getY(filename, trainIDs, testIDs):
             Ytrain = getY2(row,Ytrain,IDDict[row[0]])
         else:
             Ytest = getY2(row, Ytest,IDDict[row[0]])
-    return Ytrain, Ytest
+    return np.ascontiguousarray(Ytrain), np.ascontiguousarray(Ytest)
     
 def makePathMR(filename, end):
     path = os.getcwd()+'/'
@@ -128,6 +128,18 @@ print(Xtest.shape)
 ytrain, ytest =getY(filename, trainIDs, testIDs)
 print(ytrain.shape)
 print(ytest.shape)
+from sklearn import svm
+svmr1 = svm.SVR(kernel='rbf')
+predictions = []
+actuals = []
+for i in range(len(ytrain[:,0])):
+    #train classifier with this ytrain
+    svmr1.fit(Xtrain,ytrain[:,i])
+    ypredict = svmr1.predict(Xtest)
+    predictions.append(ypredict)
+    actuals.append(ytest[:,i])
+
+'''
 linmod1 = linear_model.LinearRegression()
 linmod1.fit(Xtrain, ytrain)
 predictions = linmod1.predict(Xtest)
@@ -136,5 +148,5 @@ check = (linmod1.score(Xtrain,ytrain))
 np.savetxt(makePathMR(filename, 'ACTUALS'+str(numUsing)+'.txt'), ytest)
 np.savetxt(makePathMR(filename,'PREDICTIONS' +str(numUsing) + '.txt'), predictions)
 np.savetxt(makePathMR(filename,'SCORE' +str(numUsing) + '.txt'), [score, check])
-
+'''
 
