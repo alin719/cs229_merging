@@ -6,21 +6,15 @@ Created on Thu May 19 10:49:48 2016
 """
 
 from lib import frame_util as futil
-<<<<<<< HEAD
-=======
 from lib import util
->>>>>>> 5cc35133e1ffd56100798fd7f203d5a2ad63b544
 from sklearn import linear_model
 import numpy as np
 import os
 from scipy import sparse
-<<<<<<< HEAD
+
 from random import random
-=======
 from lib import constants
 import random
->>>>>>> 5cc35133e1ffd56100798fd7f203d5a2ad63b544
-
 VID = 1-1
 FID = 2-1
 TOTFS = 3-1
@@ -40,12 +34,12 @@ Following = 16-1
 Spacing = 17-1
 Headway = 18-1
 
-<<<<<<< HEAD
+
 numUsing = 0 #0 to use all
 
-=======
+
 numUsing = 100
->>>>>>> 5cc35133e1ffd56100798fd7f203d5a2ad63b544
+
 
 def getStartVals(filename):
     filepath = makePathMR(filename, '-mergerStartTrajectories')
@@ -67,11 +61,11 @@ def getX2(row, X,dictOfGrids, initPos):
 def getY2(row, Y, dictOfFrames):
     yi = np.array([])
     for frame in range(row[1],row[2]):
-<<<<<<< HEAD
+
         yi = np.append(yi,dictOfFrames[frame][[LocalX,LocalY]])
-=======
+
         yi = np.append(yi,dictOfFrames[frame][LocalX:LocalY])
->>>>>>> 5cc35133e1ffd56100798fd7f203d5a2ad63b544
+
     yi.shape = (1,len(yi))
     if Y.shape == (0,):
         Y = yi
@@ -91,11 +85,11 @@ def getX(filename, trainIDs, testIDs):
     start = getStartVals(filename)    
     Xtrain = np.array([])  
     Xtest = np.array([])
-<<<<<<< HEAD
+
     it = 0
-=======
+
     it= 0
->>>>>>> 5cc35133e1ffd56100798fd7f203d5a2ad63b544
+
     if not numUsing == 0:
         MR = MR[:numUsing]
     for row in MR:
@@ -105,11 +99,11 @@ def getX(filename, trainIDs, testIDs):
         else:
             Xtest = getX2(row, Xtest, dictOfGrids, thisStart)
         it += 1
-<<<<<<< HEAD
+
     return np.ascontiguousarray(Xtrain), np.ascontiguousarray(Xtest)
-=======
+
     return sparse.csr_matrix(np.ascontiguousarray(Xtrain)), sparse.csr_matrix(np.ascontiguousarray(Xtest))
->>>>>>> 5cc35133e1ffd56100798fd7f203d5a2ad63b544
+
     
 def getY(filename, trainIDs, testIDs):
     path = os.getcwd()+'/'
@@ -137,15 +131,15 @@ def makeTrainTestData(filepath, portionTrain):
     filepath = makePathMR(filename, '-mergerMinRanges')
     MR = np.loadtxt(filepath, dtype='int')
     traintest = [[],[]]
-<<<<<<< HEAD
+
     if not numUsing == 0:
         MR = MR[:numUsing]
     for row in MR:
         traintest[random() > portionTrain].append(row[0])
-=======
+
     for ID in MR[:,0]:
         traintest[random.random() > portionTrain].append(ID)
->>>>>>> 5cc35133e1ffd56100798fd7f203d5a2ad63b544
+
     train = traintest[0]
     test = traintest[1]
     return train, test
@@ -153,7 +147,7 @@ def makeTrainTestData(filepath, portionTrain):
 
 filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
 trainIDs, testIDs = makeTrainTestData(makePathMR(filename, '-mergerMinRanges'), .75)
-<<<<<<< HEAD
+
 Xtrain, Xtest = getX(filename, trainIDs, testIDs)
 print(Xtrain.shape)
 print(Xtest.shape)
@@ -179,7 +173,7 @@ print(diff)
 print(norm)
     
 '''linmod1 = linear_model.LinearRegression()
-=======
+
 Xtrain, Xtest =getX(filename, trainIDs, testIDs)
 print(Xtrain.shape)
 print(Xtest.shape)
@@ -199,12 +193,12 @@ for i in range(len(ytrain[:,0])):
 
 '''
 linmod1 = linear_model.LinearRegression()
->>>>>>> 5cc35133e1ffd56100798fd7f203d5a2ad63b544
+
 linmod1.fit(Xtrain, ytrain)
 predictions = linmod1.predict(Xtest)
 score = (linmod1.score(Xtest,ytest))
 check = (linmod1.score(Xtrain,ytrain))
-<<<<<<< HEAD
+
 if numUsing == 0:
     numUsing == 'ALL'
 np.savetxt(makePathMR(filename, 'ACTUALS'+str(numUsing)+'.txt'), ytest)
@@ -213,10 +207,10 @@ np.savetxt(makePathMR(filename,'SCORE' +str(numUsing) + '.txt'), [score, check])
 
 from sklearn.externals import joblib
 joblib.dump(linmod1, makePathMR(filename,'MODEL' +str(numUsing) + '.pkl'))'''
-=======
+
 np.savetxt(makePathMR(filename, 'ACTUALS'+str(numUsing)+'.txt'), ytest)
 np.savetxt(makePathMR(filename,'PREDICTIONS' +str(numUsing) + '.txt'), predictions)
 np.savetxt(makePathMR(filename,'SCORE' +str(numUsing) + '.txt'), [score, check])
 '''
->>>>>>> 5cc35133e1ffd56100798fd7f203d5a2ad63b544
+
 
