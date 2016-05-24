@@ -100,3 +100,25 @@ def makeTrainTestData(filename, portionTrain):
     train = traintest[0]
     test = traintest[1]
     return train, test
+
+def saveExampleData(filename,Xtrain,ytrain,Xtest,ytest):
+    filepath_Xtrain = makePathMR(filename, 'Xtrain')
+    np.savetxt(filepath_Xtrain, Xtrain)
+    filepath_ytrain = makePathMR(filename, 'ytrain')
+    np.savetxt(filepath_ytrain, ytrain)
+    filepath_Xtest = makePathMR(filename, 'Xtest')
+    np.savetxt(filepath_Xtest, Xtest)
+    filepath_ytest = makePathMR(filename, 'ytest')
+    np.savetxt(filepath_ytest, ytest)
+
+def readExampleData(filename):
+    filepath_Xtrain = makePathMR(filename, 'Xtrain')
+    Xtrain = np.loadtxt(filepath_Xtrain)
+    filepath_Xtest = makePathMR(filename, 'Xtest')
+    Xtest = np.loadtxt(filepath_Xtest)
+    filepath_ytrain = makePathMR(filename, 'ytrain')
+    ytrain = np.loadtxt(filepath_ytrain)
+    filepath_ytest = makePathMR(filename, 'ytest')
+    ytest = np.loadtxt(filepath_ytest)
+    return Xtrain, ytrain, Xtest, ytest
+    

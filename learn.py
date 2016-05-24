@@ -21,6 +21,9 @@ print(Xtest.shape)
 ytrain, ytest = learn_util.getY(filename, trainIDs, testIDs)
 print(ytrain.shape)
 print(ytest.shape)
+learn_util.saveExampleData(filename, Xtrain, ytrain, Xtest, ytest)
+#otherwise, read from files
+#Xtrain, ytrain, Xtest, ytest = learn_util.readExampleData(filename)
 
 
 #actual learn stuff

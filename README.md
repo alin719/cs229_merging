@@ -26,6 +26,9 @@ using these directly in the dicts.
 
 4) use learn.py as to learn. Can comment out the loading of
 the data (indicated in script) once the various arrays are in memory. 
+-The script will either compute and save the Xtrain/ytrain/Xtest/ytest data
+to a file or read from it, make sure to indicate which you want by 
+commenting out the other option
 -Rerun it if you clear the memory or kernel at any point.
 
 TODO:
