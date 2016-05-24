@@ -2,7 +2,7 @@
 
 1) Setup
 
-- Create the folder /res/101_trajectories
+- Create the folders /res/101_trajectories and /res/80_trajectories
 - Copy the raw trajectories in there.
 - Go to the main directory, run python __main__.py setup
 - This should take some time, but will calculate the Vx, Vys
@@ -23,6 +23,10 @@ not already in memory.  type = 'vid' or 'frame'
 the dictionaries are not stored as vehicles, but you can init a vehicle
 from any entry, and then pull info from that.  Future updates include
 using these directly in the dicts.
+
+4) use learn.py as to learn. Can comment out the loading of
+the data (indicated in script) once the various arrays are in memory. 
+-Rerun it if you clear the memory or kernel at any point.
 
 TODO:
 - Write functions to save / load grids as txt files.
