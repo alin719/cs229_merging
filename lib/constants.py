@@ -69,7 +69,7 @@ Y_STEP = float(MAX_Y/Y_DIV)
 # global constants, using a path_to_root variable fed to it by __main__.py.
 #
 # Example path_to_root on my computer:
-#   "/Users/austin_ray/GitHub/cs221-project/recipe_writer"
+#   "/Users/Alex Lin/Documents/CS229/Project/cs229_merging"
 ##
 def init(pathToRoot):
     global PATH_TO_ROOT
