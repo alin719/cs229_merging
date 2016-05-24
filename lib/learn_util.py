@@ -26,11 +26,11 @@ def getXInner(row, X,dictOfGrids, initPos):
         Xi = np.append(Xi,dictOfGrids[frame])
     Xi = np.append(Xi, initPos)
     Xi.shape = (1,len(Xi))
-    if  X.shape == (0,):
+    if X.shape == (0,):
         X = Xi
     else:
         X=np.append(X,Xi,axis=0)
-    return X
+    return np.ascontiguousarray(X)
 
 def getYInner(row, Y, dictOfFrames):
     yi = np.array([])
@@ -41,7 +41,7 @@ def getYInner(row, Y, dictOfFrames):
         Y = yi
     else:
         Y = np.append(Y,yi,axis=0)
-    return Y
+    return np.ascontiguousarray(Y)
 
 #get the training examples
 def getX(filename, trainIDs, testIDs):
@@ -83,7 +83,7 @@ def getY(filename, trainIDs, testIDs):
             Ytest = getYInner(row, Ytest,IDDict[row[0]])
     return np.ascontiguousarray(Ytrain), np.ascontiguousarray(Ytest)
     
-def makePathMR(filename, end):
+def makePathMR(filename, end=None):
     path = os.getcwd()+'/'
     a = len('aug_trajectories-0750am-0805am.txt')
     return path+filename[:-a]+filename[(-a+4):-4]+end+'.txt'
