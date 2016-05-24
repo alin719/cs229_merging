@@ -26,7 +26,7 @@ def findMergers():
         print("Finished finding merge info for:", (filepath[-17:])[:13])
 
 def main(argv):
-    augmentTrajectories()
+    #augmentTrajectories()
     findMergers()
 
 if __name__ == "__main__":
