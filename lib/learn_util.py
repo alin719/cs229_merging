@@ -86,7 +86,7 @@ def getY(filename, trainIDs, testIDs):
 def makePathMR(filename, end):
     path = os.getcwd()+'/'
     a = len('aug_trajectories-0750am-0805am.txt')
-    return path+filename[:-a]+'mergeTrajectoryInfo/'+filename[(-a+4):-4]+end+'.txt'
+    return path+filename[:-a]+filename[(-a+4):-4]+end+'.txt'
 
 def makeTrainTestData(filename, portionTrain):
     # example filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"

@@ -26,8 +26,8 @@ Headway = 18-1
 path101 = os.getcwd()+'/res/101_trajectories/'
 path80 = os.getcwd()+'/res/80_trajectories/'
 
-file101_2 = 'trajectories-0750am-0805am'
-file101_1 = 'trajectories-0805am-0820am'
+file101_1 = 'trajectories-0750am-0805am'
+file101_2 = 'trajectories-0805am-0820am'
 file101_3 = 'trajectories-0820am-0835am'
 file80_1 = 'trajectories-0400-0415'
 file80_2 = 'trajectories-0500-0515'

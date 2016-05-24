@@ -23,7 +23,7 @@ def findMergers():
                                  constants.VehicleID, constants.FrameID, constants.TotFrames)
         mm.findAndSaveMergerStartTrajectories(filepath, constants.LaneID, 7,
                                  constants.VehicleID)
-        print("Finished finding merge info for:", (filepath[-17:])[:13])
+        print("Finished finding merge info for:", filepath[-13:])
 
 def main(argv):
     augmentTrajectories()
