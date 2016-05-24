@@ -32,7 +32,7 @@ ytests = []
 scores = []
 from sklearn import svm
 svmR = svm.SVR(C=sys.float_info.max,epsilon=sys.float_info.min, cache_size=500, gamma=0.001) #kernel='rbf',
-#followed advice from http://stackoverflow.com/questions/34475245/sklearn-svm-svr-and-svc-getting-the-same-prediction-for-every-input
+#followed advicef rom http://stackoverflow.com/questions/34475245/sklearn-svm-svr-and-svc-getting-the-same-prediction-for-every-input
 #Doesnt seem to be working though. Myabe you can take a crack at it?
 for i in range(len(ytrain[0])):
     #train model on Xtrain, ytrain[:,i]

@@ -45,7 +45,7 @@ EXE_ARG_POS = None
 DEFAULT_EXE_CHOICE = None
 MAX_X = 70
 MAX_Y = 2250
-#<<<<<<< HEAD
+
 X_DIV = 30
 Y_DIV = 60
 MIN_GRID_X = 30
@@ -54,7 +54,7 @@ MIN_GRID_Y = 500
 MAX_GRID_Y = 1500
 X_STEP = float((MAX_GRID_X - MIN_GRID_X)/X_DIV)
 Y_STEP = float((MAX_GRID_Y - MIN_GRID_Y)/Y_DIV)
-#=======
+
 X_DIV = 35
 Y_DIV = 200
 X_STEP = float(MAX_X/X_DIV)

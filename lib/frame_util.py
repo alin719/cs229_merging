@@ -138,6 +138,18 @@ def GetGridsFromFrameDict(frameDict):
     return gridDict
 
 """
+Function: GetGridIndices
+
+Takes in an x and a y, and returns the indies in the currently dimensioned
+grid.
+
+"""
+
+def GetGridIndices(givenX, givenY):
+    gridX = int((givenX - c.MIN_GRID_X) / c.X_STEP)
+    gridY = int((givenY - c.MIN_GRID_Y) / c.Y_STEP)
+    return gridX, gridY
+"""
 Function: FrameToGrid
 
 Converts info from a frame (dict of VIDs for all cars in a particular
@@ -156,8 +168,7 @@ def FrameToGrid(frame):
             continue
         # Scales the grid into the desired window - check constants.py
         # to edit MIN/MAX_GRID values.
-        gridX = int((veh.getX() - c.MIN_GRID_X) / c.X_STEP)
-        gridY = int((veh.getY() - c.MIN_GRID_Y) / c.Y_STEP)
+        gridX, griDY = GetGridIndices(veh.getX(), veh.getY())
         grid[gridX][gridY] = veh.getTrajectory()
     return grid
 
