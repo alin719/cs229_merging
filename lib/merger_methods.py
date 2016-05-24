@@ -93,6 +93,22 @@ def findAndSaveMergerStartTrajectories(filepath, VIDCol, LaneCol, MergeLane):
     Firsts = findFirstInstances(Data, VIDCol)    
     Mergers = Firsts[Firsts[:,LaneCol]==MergeLane]
     saveArrayTxt(filepath+'-mergerStartTrajectories'+'.txt', Mergers)
+
+def doMinRangesAndStartForMerges(filepath, LaneCol, VIDCol, FrameCol, TotFrameCol, MergeLane=7):
+    Data = np.loadtxt(filepath+'.txt')
+    Firsts = findFirstInstances(Data, VIDCol)  
+    Mergers = Firsts[Firsts[:,LaneCol]==MergeLane]
+    saveArrayTxt(filepath+'-mergerStartTrajectories'+'.txt', Mergers)
+    print ("Start trajectories done.")
+    Starts = Mergers[:,FrameCol]
+    Ends = Starts + min(Mergers[:,TotFrameCol])
+    Ends.shape=(len(Ends),1)
+    IDStarts = Mergers[:,[VIDCol,FrameCol]]
+    Ranges = np.append(IDStarts, Ends, axis=1)
+    saveArrayTxt(filepath+'-mergerMinRanges'+'.txt', Ranges)
+    print ("Merge ranges done.")
+
+
     
     
     
