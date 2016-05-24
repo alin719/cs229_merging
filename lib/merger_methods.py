@@ -69,7 +69,9 @@ def findAndSaveMergeEventRanges(filepath, LaneCol, MergeLane, VIDCol, FrameCol, 
     
 def findMergeEventRangesMin(filepath, LaneCol, MergeLane, VIDCol, FrameCol, TotFrameCol):
     #This will find, for each VID that merges, the start and end frames based on the minimum number of frames any merge appears in
+    print("Reading data for event range minimums from:",filepath)
     Data = np.loadtxt(filepath+'.txt')
+    print("Done reading data for event range minimums from:",filepath)
     Firsts = findFirstInstances(Data, VIDCol)  
     Mergers = Firsts[Firsts[:,LaneCol]==MergeLane]
     Starts = Mergers[:,FrameCol]
@@ -85,7 +87,9 @@ def findAndSaveMergeEventRangesMin(filepath, LaneCol, MergeLane, VIDCol, FrameCo
     
     
 def findAndSaveMergerStartTrajectories(filepath, VIDCol, LaneCol, MergeLane):
+    print("Reading data for start trajectories from:",filepath)
     Data = np.loadtxt(filepath+'.txt')
+    print("Done reading data for start trajectories from:",filepath)
     Firsts = findFirstInstances(Data, VIDCol)    
     Mergers = Firsts[Firsts[:,LaneCol]==MergeLane]
     saveArrayTxt(filepath+'-mergerStartTrajectories'+'.txt', Mergers)

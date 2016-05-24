@@ -19,14 +19,15 @@ def findMergers():
     print("Finding merger vehicle information...")
     for filepath in constants.paths:
         open(filepath+'.txt', 'r')
+        print(filepath)
         mm.findAndSaveMergeEventRangesMin(filepath, constants.LaneID, 7,
                                  constants.VehicleID, constants.FrameID, constants.TotFrames)
-        mm.findAndSaveMergerStartTrajectories(filepath, constants.LaneID, 7,
-                                 constants.VehicleID)
+        mm.findAndSaveMergerStartTrajectories(filepath, constants.VehicleID, 
+                                              constants.LaneID, MergeLane=7)
         print("Finished finding merge info for:", filepath[-13:])
 
 def main(argv):
-    augmentTrajectories()
+    #augmentTrajectories()
     findMergers()
 
 if __name__ == "__main__":

@@ -26,7 +26,7 @@ learn_util.saveExampleData(filename, Xtrain, ytrain, Xtest, ytest)
 #Xtrain, ytrain, Xtest, ytest = learn_util.readExampleData(filename)
 
 
-#actual learn stuff
+'''#actual learn stuff
 predictions = []
 ytests = []
 scores = []
@@ -53,7 +53,7 @@ print (scores)
 print (max(scores))
 print (min(scores))
     
-'''linmod1 = linear_model.LinearRegression()
+linmod1 = linear_model.LinearRegression()
 linmod1.fit(Xtrain, ytrain)
 predictions = linmod1.predict(Xtest)
 score = (linmod1.score(Xtest,ytest))
