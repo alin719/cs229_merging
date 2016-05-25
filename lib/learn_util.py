@@ -20,17 +20,30 @@ def getStartVals(filename):
     A = np.loadtxt(filepath)
     return A[:,[constants.LocalX,constants.LocalY]]
 
-def getXInner(row, X,dictOfGrids, initPos):
+def removeIDfromGrid(Frame, VID, Grid):
+    vehicleTraj = Frame[VID]
+    [xpos,ypos]=vehicleTraj[constants.LocalX,constants.LocalY]
+    indexX, indexY = futil.getGridIndices(xpos,ypos)
+    if not Grid[indexX][indexY][0] == 0:
+         Grid[indexX][indexY][0] = Grid[indexX][indexY][0]-1
+    else:
+        Grid[indexX][indexY] = [0,0,0]
+    return Grid
+
+def getXInner(row, X, dictOfGrids, initPos, dictOfFrames):
     Xi = np.array([])
     for frame in range(row[1],row[2]):
-        Xi = np.append(Xi,dictOfGrids[frame])
+        grid = dictOfGrids[frame]
+        grid = removeIDfromGrid(dictOfFrames[frame],row[0],grid)
+        Xi = np.append(Xi,grid,axis=0)
+        #remove the entry corresponding to this vid from the frame
     Xi = np.append(Xi, initPos)
     Xi.shape = (1,len(Xi))
-    if X.shape == (0,):
+    if  X.shape == (0,):
         X = Xi
     else:
         X=np.append(X,Xi,axis=0)
-    return np.ascontiguousarray(X)
+    return X
 
 def getYInner(row, Y, dictOfFrames):
     yi = np.array([])
@@ -41,7 +54,7 @@ def getYInner(row, Y, dictOfFrames):
         Y = yi
     else:
         Y = np.append(Y,yi,axis=0)
-    return np.ascontiguousarray(Y)
+    return Y
 
 #get the training examples
 def getX(filename, trainIDs, testIDs):
@@ -61,9 +74,9 @@ def getX(filename, trainIDs, testIDs):
     for row in MR:
         thisStart = start[it]
         if row[0] in trainIDs:
-            Xtrain = getXInner(row, Xtrain, dictOfGrids,thisStart)
+            Xtrain = getXInner(row, Xtrain, dictOfGrids,thisStart,frameDict)
         else:
-            Xtest = getXInner(row, Xtest, dictOfGrids, thisStart)
+            Xtest = getXInner(row, Xtest, dictOfGrids, thisStart,frameDict)
         it += 1
     return sparse.csr_matrix(np.ascontiguousarray(Xtrain)), sparse.csr_matrix(np.ascontiguousarray(Xtest))
     
@@ -83,7 +96,7 @@ def getY(filename, trainIDs, testIDs):
             Ytest = getYInner(row, Ytest,IDDict[row[0]])
     return np.ascontiguousarray(Ytrain), np.ascontiguousarray(Ytest)
     
-def makePathMR(filename, end=None):
+def makePathMR(filename, end):
     path = os.getcwd()+'/'
     a = len('aug_trajectories-0750am-0805am.txt')
     return path+filename[:-a]+filename[(-a+4):-4]+end+'.txt'
