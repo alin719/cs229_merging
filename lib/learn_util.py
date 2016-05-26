@@ -80,8 +80,10 @@ def getX(filename, trainIDs, testIDs):
         thisStart = start[it]
         if row[0] in trainIDs:
             Xtrain = getXInner(row, Xtrain, dictOfGrids,thisStart,frameDict)
+            print("Finished getting X data for Merger with VID:",row[0]," and it is a training example")
         else:
             Xtest = getXInner(row, Xtest, dictOfGrids, thisStart,frameDict)
+            print("Finished getting X data for Merger with VID:",row[0]," and it is a test example")
         it += 1
     return sparse.csr_matrix(np.ascontiguousarray(Xtrain)), sparse.csr_matrix(np.ascontiguousarray(Xtest))
     
@@ -97,8 +99,10 @@ def getY(filename, trainIDs, testIDs):
     for row in MR:
         if row[0] in trainIDs:
             Ytrain = getYInner(row,Ytrain,IDDict[row[0]])
+            print("Finished getting Y data for Merger with VID:",row[0]," and it is a training example")
         else:
             Ytest = getYInner(row, Ytest,IDDict[row[0]])
+            print("Finished getting Y data for Merger with VID:",row[0]," and it is a test example")
     return np.ascontiguousarray(Ytrain), np.ascontiguousarray(Ytest)
     
 def makePathMR(filename, end):
@@ -119,24 +123,42 @@ def makeTrainTestData(filename, portionTrain):
     test = traintest[1]
     return train, test
 
+def saveSparse(filepath, X):
+    data = X.data
+    indices = X.indices
+    indptr = X.indptr
+    np.savetxt(filepath + '-data',data)
+    np.savetxt(filepath + '-indices',indices)
+    np.savetxt(filepath + '-indptr',indptr)
+
+def loadSparse(filepath):
+    data = np.loadtxt(filepath + '-data')
+    indices = np.loadtxt(filepath + '-indices')
+    indptr = np.loadtxt(filepath + '-indptr')
+    return sparse.csr_matrix((data,indices,indptr))
+    
 def saveExampleData(filename,Xtrain,ytrain,Xtest,ytest):
-    filepath_Xtrain = makePathMR(filename, 'Xtrain')
-    np.savetxt(filepath_Xtrain, Xtrain)
-    filepath_ytrain = makePathMR(filename, 'ytrain')
+    filepath_Xtrain = makePathMR(filename, '-Xtrain')
+    saveSparse(filepath_Xtrain[:-4], Xtrain)
+    filepath_ytrain = makePathMR(filename, '-ytrain')
     np.savetxt(filepath_ytrain, ytrain)
-    filepath_Xtest = makePathMR(filename, 'Xtest')
-    np.savetxt(filepath_Xtest, Xtest)
-    filepath_ytest = makePathMR(filename, 'ytest')
+    filepath_Xtest = makePathMR(filename, '-Xtest')
+    saveSparse(filepath_Xtest[:-4], Xtest)
+    filepath_ytest = makePathMR(filename, '-ytest')
     np.savetxt(filepath_ytest, ytest)
 
 def readExampleData(filename):
-    filepath_Xtrain = makePathMR(filename, 'Xtrain')
-    Xtrain = np.loadtxt(filepath_Xtrain)
-    filepath_Xtest = makePathMR(filename, 'Xtest')
-    Xtest = np.loadtxt(filepath_Xtest)
-    filepath_ytrain = makePathMR(filename, 'ytrain')
+    filepath_Xtrain = makePathMR(filename, '-Xtrain')
+    Xtrain = loadSparse(filepath_Xtrain[:-4])
+    print("Xtrain loaded.")
+    filepath_Xtest = makePathMR(filename, '-Xtest')
+    Xtest = loadSparse(filepath_Xtest[:-4])
+    print("Xtest loaded.")
+    filepath_ytrain = makePathMR(filename, '-ytrain')
     ytrain = np.loadtxt(filepath_ytrain)
-    filepath_ytest = makePathMR(filename, 'ytest')
+    print("ytrain loaded.")
+    filepath_ytest = makePathMR(filename, '-ytest')
     ytest = np.loadtxt(filepath_ytest)
+    print("ytest loaded.")
     return Xtrain, ytrain, Xtest, ytest
     

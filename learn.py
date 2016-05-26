@@ -12,18 +12,26 @@ import sys
 #This will probably have to be made better at some point
 filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
 
+remakeData=0 #change to 0 after loaded first time
 
 #if xtrain has not been loaded, do that
-trainIDs, testIDs = learn_util.makeTrainTestData(filename, .75)
-Xtrain, Xtest = learn_util.getX(filename, trainIDs, testIDs)
+
+if remakeData == 1:
+    trainIDs, testIDs = learn_util.makeTrainTestData(filename, .75)
+    Xtrain, Xtest = learn_util.getX(filename, trainIDs, testIDs)
+    print("Finished gathering and formatting X data")
+    ytrain, ytest = learn_util.getY(filename, trainIDs, testIDs)
+    print("Finished gathering and formatting Y data")
+    learn_util.saveExampleData(filename, Xtrain, ytrain, Xtest, ytest)
+else:
+    print("Loading data from file...")
+    Xtrain, ytrain, Xtest, ytest = learn_util.readExampleData(filename)
+
 print(Xtrain.shape)
 print(Xtest.shape)
-ytrain, ytest = learn_util.getY(filename, trainIDs, testIDs)
 print(ytrain.shape)
 print(ytest.shape)
-learn_util.saveExampleData(filename, Xtrain, ytrain, Xtest, ytest)
 #otherwise, read from files
-#Xtrain, ytrain, Xtest, ytest = learn_util.readExampleData(filename)
 
 
 '''#actual learn stuff
