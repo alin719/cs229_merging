@@ -12,31 +12,35 @@ from scipy import sparse
 from random import random
 from lib import constants
 
-numUsing = 0 #0 to use all
+numUsing = 0 # 0 to use all
 
-
+'''Returns the startX and startY for all merge vehicles'''
 def getStartVals(filename):
     filepath = makePathMR(filename, '-mergerStartTrajectories')
     A = np.loadtxt(filepath)
     return A[:,[constants.LocalX,constants.LocalY]]
 
+'''Removes the entry corresponding to this vid from the grid'''
 def removeIDfromGrid(Frame, VID, Grid):
     vehicleTraj = Frame[VID]
-    [xpos,ypos]=vehicleTraj[constants.LocalX,constants.LocalY]
-    indexX, indexY = futil.getGridIndices(xpos,ypos)
+    [xpos,ypos]=vehicleTraj[[constants.LocalX,constants.LocalY]]
+    indexX, indexY = futil.GetGridIndices(xpos,ypos)
     if not Grid[indexX][indexY][0] == 0:
          Grid[indexX][indexY][0] = Grid[indexX][indexY][0]-1
+         #recalculate velocities?
     else:
-        Grid[indexX][indexY] = [0,0,0]
+        # Gave error with =[0,0,0], apparently grid is of size 6 not 3...
+        Grid[indexX][indexY] = [0,0,0,0,0,0]
+    # Did not check all grids, but the first grid seems to be all 0's... seems wrong?
     return Grid
 
+'''Called for each merging vehicle, gets all the input data.'''
 def getXInner(row, X, dictOfGrids, initPos, dictOfFrames):
     Xi = np.array([])
     for frame in range(row[1],row[2]):
         grid = dictOfGrids[frame]
         grid = removeIDfromGrid(dictOfFrames[frame],row[0],grid)
-        Xi = np.append(Xi,grid,axis=0)
-        #remove the entry corresponding to this vid from the frame
+        Xi = np.append(Xi,grid.flatten(),axis=0)
     Xi = np.append(Xi, initPos)
     Xi.shape = (1,len(Xi))
     if  X.shape == (0,):
@@ -45,6 +49,7 @@ def getXInner(row, X, dictOfGrids, initPos, dictOfFrames):
         X=np.append(X,Xi,axis=0)
     return X
 
+'''Gets ground truths for each merge vehicle'''
 def getYInner(row, Y, dictOfFrames):
     yi = np.array([])
     for frame in range(row[1],row[2]):

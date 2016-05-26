@@ -168,7 +168,7 @@ def FrameToGrid(frame):
             continue
         # Scales the grid into the desired window - check constants.py
         # to edit MIN/MAX_GRID values.
-        gridX, griDY = GetGridIndices(veh.getX(), veh.getY())
+        gridX, gridY = GetGridIndices(veh.getX(), veh.getY())
         grid[gridX][gridY] = veh.getTrajectory()
     return grid
 
