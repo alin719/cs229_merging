@@ -12,12 +12,16 @@ import sys
 #This will probably have to be made better at some point
 filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
 
-remakeData=0 #change to 0 after loaded first time
+repickTrainTest = 0 #change if just want to recalculate and train/testIDs are in memory
+remakeData = 1 #change to 0 after loaded first time
 
 #if xtrain has not been loaded, do that
 
-if remakeData == 1:
+if repickTrainTest == 1:
     trainIDs, testIDs = learn_util.makeTrainTestData(filename, .75)
+
+if remakeData == 1:
+    print("Recalculating all data")
     Xtrain, Xtest = learn_util.getX(filename, trainIDs, testIDs)
     print("Finished gathering and formatting X data")
     ytrain, ytest = learn_util.getY(filename, trainIDs, testIDs)
@@ -61,6 +65,7 @@ print (scores)
 print (max(scores))
 print (min(scores))
     
+from sklearn import linear_model
 linmod1 = linear_model.LinearRegression()
 linmod1.fit(Xtrain, ytrain)
 predictions = linmod1.predict(Xtest)
