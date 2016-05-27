@@ -24,7 +24,7 @@ def findMergers():
                                         constants.FrameID, constants.TotFrames) #MergeLane=7
 
 def main(argv):
-    augmentTrajectories()
+    #augmentTrajectories()
     findMergers()
 
 if __name__ == "__main__":

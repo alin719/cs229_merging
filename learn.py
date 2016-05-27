@@ -12,15 +12,16 @@ import sys
 #This will probably have to be made better at some point
 filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
 
-repickTrainTest = 0 #change if just want to recalculate and train/testIDs are in memory
-remakeData = -1 #change to 0 after loaded first time, 0 to read, -1 to use memory
+repickTrainTest = 1 #change if just want to recalculate and train/testIDs are in memory
+remakeData = 1 #change to 0 after loaded first time, 0 to read, -1 to use memory
 
 #if xtrain has not been loaded, do that
 
-if repickTrainTest == 1:
-    trainIDs, testIDs = learn_util.makeTrainTestData(filename, .75)
+
 
 if remakeData == 1:
+    if repickTrainTest == 1:
+        trainIDs, testIDs = learn_util.makeTrainTestData(filename, .75)
     print("Recalculating all data")
     Xtrain, Xtest = learn_util.getX(filename, trainIDs, testIDs)
     print("Finished gathering and formatting X data")
@@ -37,18 +38,19 @@ print(ytrain.shape)
 print(ytest.shape)
 #otherwise, read from files
 
+'''
 
 #actual learn stuff
-predictions = []
-ytests = []
-scores = []
 from sklearn import svm
 svmR = svm.SVR(C=1000,epsilon=0.0001, cache_size=500) #kernel='rbf',
 svmR.fit(Xtrain,ytrain)
+print("Done fitting")
 score = svmR.score(Xtest,ytest)
+print(score)
 check = svmR.score(Xtrain,ytrain)
+print(check)
 predictions = svmR.predict(Xtest)
-
+'''
 
 
 

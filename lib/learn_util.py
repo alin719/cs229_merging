@@ -35,31 +35,39 @@ def removeIDfromGrid(Frame, VID, Grid):
     return Grid
 
 '''Called for each merging vehicle, gets all the input data.'''
-def getXInner(row, X, dictOfGrids, initPos, dictOfFrames):
-    Xi = np.array([])
+def getXInner(row,dictOfGrids, initPos, dictOfFrames):
+    VID = row[0]
+    start = row[1]
+    X_for_id = np.array([]) #This will have numFrames rows and sizeGrid+1 columns
     for frame in range(row[1],row[2]):
+        t_elapsed = frame-start        
         grid = dictOfGrids[frame]
-        grid = removeIDfromGrid(dictOfFrames[frame],row[0],grid)
-        Xi = np.append(Xi,grid.flatten(),axis=0)
-    Xi = np.append(Xi, initPos)
-    Xi.shape = (1,len(Xi))
-    if  X.shape == (0,):
-        X = Xi
-    else:
-        X=np.append(X,Xi,axis=0)
-    return X
+        grid = removeIDfromGrid(dictOfFrames[frame],VID,grid)
+        Xrow = np.append(t_elapsed,grid.flatten())
+        Xrow.shape = (1,len(Xrow))
+        if X_for_id.shape == (0,):
+            X_for_id = Xrow
+        else:
+            X_for_id = np.append(X_for_id,Xrow,axis=0)
+    # Xi = np.append(Xi, initPos)
+    # Xi.shape = (1,len(Xi))
+    return (X_for_id)
 
 '''Gets ground truths for each merge vehicle'''
-def getYInner(row, Y, dictOfFrames):
-    yi = np.array([])
+def getYInner(row, dictOfFrames):
+    y_for_id = np.array([]) #this will have numFrames rows and 1 column
     for frame in range(row[1],row[2]):
-        yi = np.append(yi,dictOfFrames[frame][[constants.LocalX,constants.LocalY]])
-    yi.shape = (1,len(yi))
-    if Y.shape == (0,):
-        Y = yi
+        yrow = dictOfFrames[frame][[constants.LocalX]]#,constants.LocalY]])
+        y_for_id = np.append(y_for_id,yrow)
+    return y_for_id
+
+'''AVOID---This probably uses a significant amount of memory'''
+def append(orig, add, axisNum=0):
+    if orig.shape == (0,):
+        orig = add
     else:
-        Y = np.append(Y,yi,axis=0)
-    return Y
+        orig = np.append(orig,add,axis=axisNum)
+    return orig
 
 #get the training examples
 def getX(filename, trainIDs, testIDs):
@@ -71,37 +79,50 @@ def getX(filename, trainIDs, testIDs):
     MR = np.loadtxt(filepath, dtype='int')
     '''MR=MergeRanges. MR[:,0]=merge ids, MR[:,1]=start frame, MR[:,2] = end'''
     start = getStartVals(filename)    
-    Xtrain = np.array([])  
+    Xtrain = np.array([])   #will have numTrain*numFrames rows and size(grid)+1 columns
     Xtest = np.array([])
     it = 0
+    trainEmpty = True
+    testEmpty = True
     if not numUsing == 0:
         MR = MR[:numUsing]
     for row in MR:
         thisStart = start[it]
+        XVID = sparse.csr_matrix(np.ascontiguousarray(getXInner(row, dictOfGrids,thisStart,frameDict)))
         if row[0] in trainIDs:
-            Xtrain = getXInner(row, Xtrain, dictOfGrids,thisStart,frameDict)
+            if  trainEmpty == True:
+                Xtrain = XVID
+                trainEmpty = False
+            else:
+                Xtrain = sparse.vstack((Xtrain,XVID))#,axis=0)
             print("Finished getting X data for Merger with VID:",row[0]," and it is a training example")
         else:
-            Xtest = getXInner(row, Xtest, dictOfGrids, thisStart,frameDict)
+            if testEmpty == True:
+                Xtest = XVID
+                testEmpty = False
+            else:
+                Xtest = sparse.vstack((Xtest,XVID))#np.append(Xtest,XVID,axis=0)
             print("Finished getting X data for Merger with VID:",row[0]," and it is a test example")
         it += 1
-    return sparse.csr_matrix(np.ascontiguousarray(Xtrain)), sparse.csr_matrix(np.ascontiguousarray(Xtest))
+        print(Xtrain.shape)
+    return Xtrain, Xtest
     
 def getY(filename, trainIDs, testIDs):
     path = os.getcwd()+'/'
     IDDict = futil.LoadDictFromTxt(path+filename, 'vid')
     filepath = makePathMR(filename, '-mergerMinRanges')
     MR = np.loadtxt(filepath, dtype='int')
-    Ytrain = np.array([])    
+    Ytrain = np.array([])    #will have numTrain*numFrames rows and 1 column
     Ytest = np.array([])
     if not numUsing == 0:
         MR = MR[:numUsing]
     for row in MR:
+        YVID = np.ascontiguousarray(getYInner(row,IDDict[row[0]]))
         if row[0] in trainIDs:
-            Ytrain = getYInner(row,Ytrain,IDDict[row[0]])
+            Ytrain=append(Ytrain,YVID) #uses append because Y is small in memory
             print("Finished getting Y data for Merger with VID:",row[0]," and it is a training example")
         else:
-            Ytest = getYInner(row, Ytest,IDDict[row[0]])
+            Ytest=append(Ytest,YVID)
             print("Finished getting Y data for Merger with VID:",row[0]," and it is a test example")
     return np.ascontiguousarray(Ytrain), np.ascontiguousarray(Ytest)
     
