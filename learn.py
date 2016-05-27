@@ -13,7 +13,7 @@ import sys
 filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
 
 repickTrainTest = 0 #change if just want to recalculate and train/testIDs are in memory
-remakeData = 1 #change to 0 after loaded first time
+remakeData = -1 #change to 0 after loaded first time, 0 to read, -1 to use memory
 
 #if xtrain has not been loaded, do that
 
@@ -27,7 +27,7 @@ if remakeData == 1:
     ytrain, ytest = learn_util.getY(filename, trainIDs, testIDs)
     print("Finished gathering and formatting Y data")
     learn_util.saveExampleData(filename, Xtrain, ytrain, Xtest, ytest)
-else:
+elif remakeData == 0:
     print("Loading data from file...")
     Xtrain, ytrain, Xtest, ytest = learn_util.readExampleData(filename)
 
@@ -38,13 +38,22 @@ print(ytest.shape)
 #otherwise, read from files
 
 
-'''#actual learn stuff
+#actual learn stuff
 predictions = []
 ytests = []
 scores = []
 from sklearn import svm
-svmR = svm.SVR(C=sys.float_info.max,epsilon=sys.float_info.min, cache_size=500, gamma=0.001) #kernel='rbf',
-#followed advicef rom http://stackoverflow.com/questions/34475245/sklearn-svm-svr-and-svc-getting-the-same-prediction-for-every-input
+svmR = svm.SVR(C=1000,epsilon=0.0001, cache_size=500) #kernel='rbf',
+svmR.fit(Xtrain,ytrain)
+score = svmR.score(Xtest,ytest)
+check = svmR.score(Xtrain,ytrain)
+predictions = svmR.predict(Xtest)
+
+
+
+
+
+'''#followed advicef rom http://stackoverflow.com/questions/34475245/sklearn-svm-svr-and-svc-getting-the-same-prediction-for-every-input
 #Doesnt seem to be working though. Myabe you can take a crack at it?
 for i in range(len(ytrain[0])):
     #train model on Xtrain, ytrain[:,i]
@@ -73,9 +82,9 @@ score = (linmod1.score(Xtest,ytest))
 check = (linmod1.score(Xtrain,ytrain))
 if numUsing == 0:
     numUsing == 'ALL'
-np.savetxt(makePathMR(filename, 'ACTUALS'+str(numUsing)+'.txt'), ytest)
-np.savetxt(makePathMR(filename,'PREDICTIONS' +str(numUsing) + '.txt'), predictions)
-np.savetxt(makePathMR(filename,'SCORE' +str(numUsing) + '.txt'), [score, check])
+np.savetxt(makePathMR(filename, '-ACTUALS-'+str(numUsing)), ytest)
+np.savetxt(makePathMR(filename,'-PREDICTIONS-' +str(numUsing)), predictions)
+np.savetxt(makePathMR(filename,'-SCORE-' +str(numUsing)), [score, check])
 
 from sklearn.externals import joblib
-joblib.dump(linmod1, makePathMR(filename,'MODEL' +str(numUsing) + '.pkl'))'''
+joblib.dump(linmod1, makePathMR(filename,'-MODEL-' +str(numUsing)))'''
