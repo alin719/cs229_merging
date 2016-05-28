@@ -8,12 +8,13 @@ Created on Mon May 23 18:14:54 2016
 import numpy as np
 from lib import learn_util
 import sys
+import time
 
 #This will probably have to be made better at some point
 filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
 
 repickTrainTest = 1 #change if just want to recalculate and train/testIDs are in memory
-remakeData = 1 #change to 0 after loaded first time, 0 to read, -1 to use memory
+remakeData = -1 #change to 0 after loaded first time, 0 to read, -1 to use memory
 
 #if xtrain has not been loaded, do that
 
@@ -38,19 +39,37 @@ print(ytrain.shape)
 print(ytest.shape)
 #otherwise, read from files
 
-'''
+
 
 #actual learn stuff
 from sklearn import svm
-svmR = svm.SVR(C=1000,epsilon=0.0001, cache_size=500) #kernel='rbf',
-svmR.fit(Xtrain,ytrain)
-print("Done fitting")
-score = svmR.score(Xtest,ytest)
-print(score)
-check = svmR.score(Xtrain,ytrain)
-print(check)
-predictions = svmR.predict(Xtest)
-'''
+diff = ytest-np.array(predictions)
+norm = np.linalg.norm(diff)
+outputsSVM = [['def','def',score,check,norm]] #already been computed
+for penalties in [100,1000,10000]:
+    for eps in [0.00001,0.000001]:
+        svmR = svm.SVR(C=penalties,epsilon=eps,cache_size=1500) #kernel='rbf',
+        svmR.fit(Xtrain,ytrain)
+        print("Done fitting model:", penalties, eps)
+        print(time.time())
+        score = svmR.score(Xtest,ytest)
+        print(score)
+        check = svmR.score(Xtrain,ytrain)
+        print(check)
+        predictions = svmR.predict(Xtest)
+        diff = ytest-np.array(predictions)
+        norm = np.linalg.norm(diff)
+        print(norm)
+        outputsSVM.append([penalties,eps,score,check,norm])
+print(outputsSVM)
+
+outputsLin = [linmod1.score(Xtest,ytest), linmod1.score(Xtrain,ytrain)]
+predictions = linmod1.predict(Xtest)
+outputsLin.append(np.linalg.norm(ytest-np.array(predictions)))
+print (outputsLin)
+#from sklearn import linear_model
+#linmod1 = linear_model.LinearRegression()
+#linmod1.fit(Xtrain, ytrain)
 
 
 
