@@ -160,7 +160,7 @@ that location.
 
 def FrameToGrid(frame):
     #Creates grid determined by DIV numbers in constants.py
-    grid = np.zeros((c.X_DIV, c.Y_DIV, 6)) #6 is number of elems in trajectory info
+    grid = np.zeros((c.X_DIV, c.Y_DIV, 3)) # is number of elems in trajectory info
     for vid in frame:
         vehicleData = frame[vid]
         veh = v.vehicle(vehicleData)
@@ -169,7 +169,7 @@ def FrameToGrid(frame):
         # Scales the grid into the desired window - check constants.py
         # to edit MIN/MAX_GRID values.
         gridX, griDY = GetGridIndices(veh.getX(), veh.getY())
-        grid[gridX][gridY] = veh.getTrajectory()
+        grid[gridX][gridY] += veh.getGridInfo()
     return grid
 
 """
