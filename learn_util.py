@@ -31,43 +31,37 @@ def removeIDfromGrid(Frame, VID, Grid):
     else:
         # Gave error with =[0,0,0], apparently grid is of size 6 not 3...
         Grid[indexX][indexY] = [0,0,0,0,0,0]
-    # Did not check all grids, but the first grid seems to be all 0's... seems wrong?
     return Grid
 
-'''Called for each merging vehicle, gets all the input data.'''
-def getXInner(row,dictOfGrids, initPos, dictOfFrames):
-    VID = row[0]
-    start = row[1]
-    X_for_id = np.array([]) #This will have numFrames rows and sizeGrid+1 columns
+'''Called for each merging vehicle, gets all the input data.
+X is the overall data array that will have #frames * #mergers rows'''
+def getXInner(row, dictOfGrids, initPos, dictOfFrames):
+    VID=row[0]
+    startFrame=row[1]
+    #endFrame=row[2]
+    Xi = np.array([])#this will contain #frames rows of grid-vid + telapsed
     for frame in range(row[1],row[2]):
-        t_elapsed = frame-start        
         grid = dictOfGrids[frame]
         grid = removeIDfromGrid(dictOfFrames[frame],VID,grid)
-        Xrow = np.append(t_elapsed,grid.flatten())
-        Xrow.shape = (1,len(Xrow))
-        if X_for_id.shape == (0,):
-            X_for_id = Xrow
+        t_elapsed = frame - startFrame
+        Xrow = np.append(t_elapsed, grid.flatten())
+        Xrow.shape=(1,len(Xrow))
+        if  Xi.shape == (0,):
+            Xi = Xrow
         else:
-            X_for_id = np.append(X_for_id,Xrow,axis=0)
-    # Xi = np.append(Xi, initPos)
-    # Xi.shape = (1,len(Xi))
-    return (X_for_id)
+            Xi=np.append(Xi,Xrow,axis=0)
+    return np.ascontiguousarray(Xi)
+    #Xi = np.append(Xi, initPos)
+    #Xi.shape = (1,len(Xi))
+    
 
-'''Gets ground truths for each merge vehicle'''
+'''Gets ground truths for each merge vehicle. '''
 def getYInner(row, dictOfFrames):
-    y_for_id = np.array([]) #this will have numFrames rows and 1 column
+    yi = np.array([])
     for frame in range(row[1],row[2]):
-        yrow = dictOfFrames[frame][[constants.LocalX]]#,constants.LocalY]])
-        y_for_id = np.append(y_for_id,yrow)
-    return y_for_id
-
-'''AVOID---This probably uses a significant amount of memory'''
-def append(orig, add, axisNum=0):
-    if orig.shape == (0,):
-        orig = add
-    else:
-        orig = np.append(orig,add,axis=axisNum)
-    return orig
+        yi = np.append(yi,dictOfFrames[frame][[constants.LocalX]],axis=0) #,constants.LocalY]])
+    #yi.shape = (1,len(yi))
+    return np.ascontiguousarray(yi)
 
 #get the training examples
 def getX(filename, trainIDs, testIDs):
@@ -79,50 +73,51 @@ def getX(filename, trainIDs, testIDs):
     MR = np.loadtxt(filepath, dtype='int')
     '''MR=MergeRanges. MR[:,0]=merge ids, MR[:,1]=start frame, MR[:,2] = end'''
     start = getStartVals(filename)    
-    Xtrain = np.array([])   #will have numTrain*numFrames rows and size(grid)+1 columns
+    Xtrain = np.array([])  
     Xtest = np.array([])
     it = 0
-    trainEmpty = True
-    testEmpty = True
     if not numUsing == 0:
         MR = MR[:numUsing]
     for row in MR:
         thisStart = start[it]
-        XVID = sparse.csr_matrix(np.ascontiguousarray(getXInner(row, dictOfGrids,thisStart,frameDict)))
+        XVID = getXInner(row, dictOfGrids,thisStart,frameDict)
         if row[0] in trainIDs:
-            if  trainEmpty == True:
+            if  Xtrain.shape == (0,):
                 Xtrain = XVID
-                trainEmpty = False
             else:
-                Xtrain = sparse.vstack((Xtrain,XVID))#,axis=0)
+                Xtrain=np.ascontiguousarray(np.append(Xtrain,XVID,axis=0))
             print("Finished getting X data for Merger with VID:",row[0]," and it is a training example")
         else:
-            if testEmpty == True:
+            if  Xtest.shape == (0,):
                 Xtest = XVID
-                testEmpty = False
             else:
-                Xtest = sparse.vstack((Xtest,XVID))#np.append(Xtest,XVID,axis=0)
+                Xtest=np.ascontiguousarray(np.append(Xtest,XVID,axis=0))
             print("Finished getting X data for Merger with VID:",row[0]," and it is a test example")
         it += 1
-        print(Xtrain.shape)
-    return Xtrain, Xtest
+    return sparse.csr_matrix(np.ascontiguousarray(Xtrain)), sparse.csr_matrix(np.ascontiguousarray(Xtest))
     
 def getY(filename, trainIDs, testIDs):
     path = os.getcwd()+'/'
     IDDict = futil.LoadDictFromTxt(path+filename, 'vid')
     filepath = makePathMR(filename, '-mergerMinRanges')
     MR = np.loadtxt(filepath, dtype='int')
-    Ytrain = np.array([])    #will have numTrain*numFrames rows and 1 column
+    Ytrain = np.array([])    
     Ytest = np.array([])
     if not numUsing == 0:
         MR = MR[:numUsing]
     for row in MR:
-        YVID = np.ascontiguousarray(getYInner(row,IDDict[row[0]]))
+        YVID = getYInner(row,IDDict[row[0]])
         if row[0] in trainIDs:
-            Ytrain=append(Ytrain,YVID) #uses append because Y is small in memory
+            if Ytrain.shape == (0,):
+                Ytrain = YVID
+            else:
+                Ytrain = np.append(Ytrain,YVID,axis=0)
             print("Finished getting Y data for Merger with VID:",row[0]," and it is a training example")
         else:
-            Ytest=append(Ytest,YVID)
+            if Ytest.shape == (0,):
+                Ytest = YVID
+            else:
+                Ytest = np.append(Ytest,YVID,axis=0)
             print("Finished getting Y data for Merger with VID:",row[0]," and it is a test example")
     return np.ascontiguousarray(Ytrain), np.ascontiguousarray(Ytest)
     
