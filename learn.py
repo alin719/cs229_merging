@@ -82,7 +82,7 @@ for penalties in [10, 100,1000,10000]:
 
 linmod1 = linear_model.LinearRegression()
 linmod1.fit(Xtrain, ytrain)
-saveModelStuff(model, 'linReg', Xtest, ytest, Xtrain, ytrain, filename)
+saveModelStuff(linmod1, 'linReg', Xtest, ytest, Xtrain, ytrain, filename)
 #from sklearn import linear_model
 #linmod1 = linear_model.LinearRegression()
 #linmod1.fit(Xtrain, ytrain)
