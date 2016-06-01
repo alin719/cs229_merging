@@ -72,16 +72,15 @@ class vehicle:
         return self.GridInfo
     def getGridInfoLen(self):
         return len(self.GridInfo)
-    def returnCompressedArray(self):
-        return []
-
-                    self.vid = augArray[0]
-            self.fid = augArray[1]
-            self.numFrames = augArray[2]
-            self.x = augArray[4]
-            self.y = augArray[5]
-            self.Vy = augArray[11]
-            self.Ay = augArray[12]
-            self.Vx = augArray[18]
-            self.Ax = augArray[19]
-            self.lane = augArray[13]
+    # def returnCompressedArray(self):
+    #     return []
+    #     self.vid = augArray[0]
+    #     self.fid = augArray[1]
+    #     self.numFrames = augArray[2]
+    #     self.x = augArray[4]
+    #     self.y = augArray[5]
+    #     self.Vy = augArray[11]
+    #     self.Ay = augArray[12]
+    #     self.Vx = augArray[18]
+    #     self.Ax = augArray[19]
+    #     self.lane = augArray[13]
