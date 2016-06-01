@@ -70,7 +70,6 @@ def saveModelStuff(model, modelType, Xtest, ytest, Xtrain, ytrain, filename): #m
 
 
 #actual learn stuff
-from sklearn import svm
 #diff = ytest-np.array(predictions)
 #norm = np.linalg.norm(diff)
 #outputsSVM = [['def','def',score,check,norm]] #already been computed
