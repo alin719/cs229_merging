@@ -188,10 +188,10 @@ that location.
 
 def FrameToGrid(frame):
     #Creates grid determined by DIV numbers in constants.py
-    dummyData = frame[(frame.keys()[0])]
-    dummyVehicle = v.vehicle(dummyData)
+    #dummyData = frame[(frame.keys()[0])]
+    #dummyVehicle = v.vehicle(dummyData)
 
-    grid = np.zeros((c.X_DIV, c.Y_DIV, dummyVehicle.getGridInfoLen())) # is number of elems in trajectory info
+    grid = np.zeros((c.X_DIV, c.Y_DIV, 3))#dummyVehicle.getGridInfoLen())) # is number of elems in trajectory info
     for vid in frame:
         vehicleData = frame[vid]
         veh = v.vehicle(vehicleData)
@@ -199,7 +199,7 @@ def FrameToGrid(frame):
             continue
         # Scales the grid into the desired window - check constants.py
         # to edit MIN/MAX_GRID values.
-        gridX, griDY = GetGridIndices(veh.getX(), veh.getY())
+        gridX, gridY = GetGridIndices(veh.getX(), veh.getY())
         grid[gridX][gridY] += veh.getGridInfo()
         grid = MeanCenterGrid(grid)
     return grid
