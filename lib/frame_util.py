@@ -170,8 +170,9 @@ def MeanCenterGrid(grid):
     means /= means[0]
     means[0] = 0
     for i in range(x):
-        for j in range(j):
-            grid[i][j] -= means
+        for j in range(y):
+            if grid[i][j][0] != 0:
+                grid[i][j] -= means
     return grid
 
     
