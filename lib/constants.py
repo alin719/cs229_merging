@@ -55,10 +55,10 @@ MAX_GRID_Y = 1500
 X_STEP = float((MAX_GRID_X - MIN_GRID_X)/X_DIV)
 Y_STEP = float((MAX_GRID_Y - MIN_GRID_Y)/Y_DIV)
 
-X_DIV = 35
-Y_DIV = 200
-X_STEP = float(MAX_X/X_DIV)
-Y_STEP = float(MAX_Y/Y_DIV)
+# X_DIV = 35
+# Y_DIV = 200
+# X_STEP = float(MAX_X/X_DIV)
+# Y_STEP = float(MAX_Y/Y_DIV)
 
 ##
 # Function: init
