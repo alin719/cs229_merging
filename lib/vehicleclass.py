@@ -45,7 +45,8 @@ class vehicle:
             self.timeHeadway = augArray[17]
 
         """
-        Uncomment out depending on which model we're runing
+        Uncomment out depending on which model we're running
+        This is what you should change to change what's included in the grid.
         """
         self.GridInfo = [1, self.Vx, self.Ax, self.spaceHeadway]
         #self.GridInfo = [1, self.Vx, self.Ax]
@@ -69,7 +70,7 @@ class vehicle:
         return [self.x, self.y, self.Vx, self.Vy, self.Ax, self.Ay]
     def getGridInfo(self):
         return self.GridInfo
-    def lenGridInfo(self):
+    def getGridInfoLen(self):
         return len(self.GridInfo)
     def returnCompressedArray(self):
         return []

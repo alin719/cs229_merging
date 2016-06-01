@@ -188,7 +188,10 @@ that location.
 
 def FrameToGrid(frame):
     #Creates grid determined by DIV numbers in constants.py
-    grid = np.zeros((c.X_DIV, c.Y_DIV, 3)) # is number of elems in trajectory info
+    dummyData = frame[(frame.keys()[0])]
+    dummyVehicle = v.vehicle(dummyData)
+
+    grid = np.zeros((c.X_DIV, c.Y_DIV, dummyVehicle.getGridInfoLen())) # is number of elems in trajectory info
     for vid in frame:
         vehicleData = frame[vid]
         veh = v.vehicle(vehicleData)

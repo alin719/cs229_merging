@@ -127,7 +127,7 @@ def deleteDuplicatesBy(li, duplicatesQ):
 # Return a string with the current date and time appended.
 ##
 def string_appendDateAndTime(s):
-    return "_".join([s, time.strftime("%m-%d-%Y"), time.strftime("%Hh-%Mm-%Ss")]) + ".json"
+    return "_".join([s, time.strftime("%m-%d-%Y"), time.strftime("%Hh-%Mm-%Ss")])
 
 ##
 # Function: hasDeepKey
