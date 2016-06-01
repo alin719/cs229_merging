@@ -131,6 +131,9 @@ def makePathMR(filename, end):
     a = len('aug_trajectories-0750am-0805am.txt')
     return path+filename[:-a]+filename[(-a+4):-4]+end+'.txt'
 
+def getSpan(filename):
+    return filename[-17:][:-4]
+
 def makeTrainTestData(filename, portionTrain):
     # example filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
     filepath = makePathMR(filename, '-mergerMinRanges')

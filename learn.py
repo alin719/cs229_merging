@@ -7,8 +7,15 @@ Created on Mon May 23 18:14:54 2016
 
 import numpy as np
 from lib import learn_util
+from lib import util
+from lib import constants as c
 import sys
 import time
+from sklearn.externals import joblib
+from sklearn import svm
+from sklearn import linear_model
+
+
 
 #This will probably have to be made better at some point
 filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
@@ -41,16 +48,25 @@ print(ytest.shape)
 
 #run this after the model is fit
 #if using a model with specific values (like penalties), include that in type
-def saveModelStuff(model, modelType='SVM', Xtest, ytest, filename):
+def saveModelStuff(model, modelType='SVM', Xtest, ytest, Xtrain, ytrain, filename):
     predictions = model.predict(Xtest)
     score = svmR.score(Xtest,ytest)
+    predictionsTrain = model.predict(Xtrain)
+    check = svmR.score(Xtrain,ytrain)
+    folder = util.string_appendDateAndTime(learn_util.getSpan(filename)) + '/'
+    path = c.PATH_TO_RESOURCES + '/101_trajectories/' + folder
+    np.savetxt(path + 'ACTUALS', ytest)
+    np.savetxt(path + 'PREDICTIONS-TEST', predictions)
+    np.savetxt(path + 'PREDICTIONS-TRAIN', predictionsTrain)
+    np.savetxt(path + 'SCORE-TEST', score)
+    np.savetxt(path + 'SCORE-TRAIN', check)
+    joblib.dump(model, path + 'MODEL')
 
 
 #actual learn stuff
-from sklearn import svm
-diff = ytest-np.array(predictions)
-norm = np.linalg.norm(diff)
-outputsSVM = [['def','def',score,check,norm]] #already been computed
+#diff = ytest-np.array(predictions)
+#norm = np.linalg.norm(diff)
+#outputsSVM = [['def','def',score,check,norm]] #already been computed
 for penalties in [100,1000,10000]:
     for eps in [0.00001,0.000001]:
         svmR = svm.SVR(C=penalties,epsilon=eps,cache_size=1500) #kernel='rbf',
@@ -68,6 +84,8 @@ for penalties in [100,1000,10000]:
         outputsSVM.append([penalties,eps,score,check,norm])
 print(outputsSVM)
 
+linmod1 = linear_model.LinearRegression()
+linmod1.fit(Xtrain, ytrain)
 outputsLin = [linmod1.score(Xtest,ytest), linmod1.score(Xtrain,ytrain)]
 predictions = linmod1.predict(Xtest)
 outputsLin.append(np.linalg.norm(ytest-np.array(predictions)))
