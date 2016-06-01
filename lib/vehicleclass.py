@@ -41,9 +41,15 @@ class vehicle:
             # self.vClass = augArray[10]
             # self.precedingVID = augArray[14]
             # self.followingVID = augArray[15]
-            # self.spaceHeadway = augArray[16]
-            # self.timeHeadway = augArray[17]
-        self.GridInfo = [1, self.Vx, self.Ax]
+            self.spaceHeadway = augArray[16]
+            self.timeHeadway = augArray[17]
+
+        """
+        Uncomment out depending on which model we're runing
+        """
+        self.GridInfo = [1, self.Vx, self.Ax, self.spaceHeadway]
+        #self.GridInfo = [1, self.Vx, self.Ax]
+
     
     def getX(self):
         return self.x

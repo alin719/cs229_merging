@@ -149,6 +149,33 @@ def GetGridIndices(givenX, givenY):
     gridX = int((givenX - c.MIN_GRID_X) / c.X_STEP)
     gridY = int((givenY - c.MIN_GRID_Y) / c.Y_STEP)
     return gridX, gridY
+
+
+"""
+Function: MeanCenterGrid
+
+Takes in a grid, and subtracts the mean of all values besides #vehicles.
+
+"""
+
+def MeanCenterGrid(grid):
+    x, y, z = grid.shape
+    means = np.zeros(z)
+    for i in range(x):
+        for j in range(y):
+            numVehicles = grid[i][j][0]
+            scaledVals = grid[i][j]*numVehicles
+            scaledVals[0] = numVehicles
+            means += scaledVals
+    means /= means[0]
+    means[0] = 0
+    for i in range(x):
+        for j in range(j):
+            grid[i][j] -= means
+    return grid
+
+    
+
 """
 Function: FrameToGrid
 
@@ -169,7 +196,8 @@ def FrameToGrid(frame):
         # Scales the grid into the desired window - check constants.py
         # to edit MIN/MAX_GRID values.
         gridX, griDY = GetGridIndices(veh.getX(), veh.getY())
-        grid[gridX][gridY] += veh.getGridInfo()7
+        grid[gridX][gridY] += veh.getGridInfo()
+        grid = MeanCenterGrid(grid)
     return grid
 
 """
