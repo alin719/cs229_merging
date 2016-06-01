@@ -25,8 +25,6 @@ remakeData = 1 #change to 0 after loaded first time, 0 to read, -1 to use memory
 
 #if xtrain has not been loaded, do that
 
-
-
 if remakeData == 1:
     if repickTrainTest == 1:
         trainIDs, testIDs = learn_util.makeTrainTestData(filename, .75)
@@ -48,20 +46,25 @@ print(ytest.shape)
 
 #run this after the model is fit
 #if using a model with specific values (like penalties), include that in type
-def saveModelStuff(model, modelType, Xtest, ytest, Xtrain, ytrain, filename): #modelType = 'SVM'
+def saveModelStuff(model, modelType, Xtest, ytest, Xtrain, ytrain, filename): #modelType = 'SVM'     
+    print("Done fitting model, getting prdeictions...", time.ctime())
     predictions = model.predict(Xtest)
+    print ("Done with predictions, scoring...", time.ctime())    
     score = svmR.score(Xtest,ytest)
+    print ("Getting prdeictions on train data...", time.ctime())    
     predictionsTrain = model.predict(Xtrain)
+    print ("Done with predictions, scoring...", time.ctime())    
     check = svmR.score(Xtrain,ytrain)
+    print("Done with all prediction, saving outputs.", time.ctime())
     folder = util.string_appendDateAndTime(learn_util.getSpan(filename)) + modelType + '/'
     path = c.PATH_TO_RESOURCES + '/101_trajectories/' + folder
+    print('model ', modelType, ': score = ', score, 'train_score = ', check)
     np.savetxt(path + 'ACTUALS', ytest)
     np.savetxt(path + 'PREDICTIONS-TEST', predictions)
     np.savetxt(path + 'PREDICTIONS-TRAIN', predictionsTrain)
     np.savetxt(path + 'SCORE-TEST', score)
     np.savetxt(path + 'SCORE-TRAIN', check)
     joblib.dump(model, path + 'MODEL')
-
 
 #actual learn stuff
 # def saveModelStuff(model, modelType='SVM', Xtest, ytest, filename):
@@ -76,6 +79,7 @@ def saveModelStuff(model, modelType, Xtest, ytest, Xtrain, ytrain, filename): #m
 for penalties in [10, 100,1000,10000]:
     for eps in [0.0001,0.00001,0.000001]:
         svmR = svm.SVR(C=penalties,epsilon=eps,cache_size=1500) #kernel='rbf',
+        print("Fitting Model...", time.ctime())
         svmR.fit(Xtrain,ytrain)
         saveModelStuff(svmR, 'SVM-'+penalties+'-'+eps, Xtest, ytest, Xtrain, ytrain, filename)
 
