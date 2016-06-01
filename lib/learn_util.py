@@ -133,6 +133,15 @@ def makePathMR(filename, end):
 
 def getSpan(filename):
     return filename[-17:][:-4]
+    
+def makePathToTrajectories(filename):
+    outerFolder = filename[4:-35]
+    path1 = constants.PATH_TO_RESOURCES + '/' + outerFolder + '/' 
+    return path1 + getSpan(filename) + '/'
+
+def makeFullPath(filename, end):
+    path = makePathToTrajectories
+    return path + end
 
 def makeTrainTestData(filename, portionTrain):
     # example filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
@@ -162,26 +171,26 @@ def loadSparse(filepath):
     return sparse.csr_matrix((data,indices,indptr))
     
 def saveExampleData(filename,Xtrain,ytrain,Xtest,ytest):
-    filepath_Xtrain = makePathMR(filename, '-Xtrain')
+    filepath_Xtrain = makeFullPath(filename, '-Xtrain')
     saveSparse(filepath_Xtrain[:-4], Xtrain)
-    filepath_ytrain = makePathMR(filename, '-ytrain')
+    filepath_ytrain = makeFullPath(filename, '-ytrain')
     np.savetxt(filepath_ytrain, ytrain)
-    filepath_Xtest = makePathMR(filename, '-Xtest')
+    filepath_Xtest = makeFullPath(filename, '-Xtest')
     saveSparse(filepath_Xtest[:-4], Xtest)
-    filepath_ytest = makePathMR(filename, '-ytest')
+    filepath_ytest = makeFullPath(filename, '-ytest')
     np.savetxt(filepath_ytest, ytest)
 
 def readExampleData(filename):
-    filepath_Xtrain = makePathMR(filename, '-Xtrain')
+    filepath_Xtrain = makeFullPath(filename, '-Xtrain')
     Xtrain = loadSparse(filepath_Xtrain[:-4])
     print("Xtrain loaded.")
-    filepath_Xtest = makePathMR(filename, '-Xtest')
+    filepath_Xtest = makeFullPath(filename, '-Xtest')
     Xtest = loadSparse(filepath_Xtest[:-4])
     print("Xtest loaded.")
-    filepath_ytrain = makePathMR(filename, '-ytrain')
+    filepath_ytrain = makeFullPath(filename, '-ytrain')
     ytrain = np.loadtxt(filepath_ytrain)
     print("ytrain loaded.")
-    filepath_ytest = makePathMR(filename, '-ytest')
+    filepath_ytest = makeFullPath(filename, '-ytest')
     ytest = np.loadtxt(filepath_ytest)
     print("ytest loaded.")
     return Xtrain, ytrain, Xtest, ytest

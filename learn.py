@@ -44,6 +44,8 @@ print(ytrain.shape)
 print(ytest.shape)
 #otherwise, read from files
 
+
+    
 #run this after the model is fit
 #if using a model with specific values (like penalties), include that in type
 def saveModelStuff(model, modelType, Xtest, ytest, Xtrain, ytrain, filename): #modelType = 'SVM'     
@@ -56,8 +58,8 @@ def saveModelStuff(model, modelType, Xtest, ytest, Xtrain, ytrain, filename): #m
     print ("Done with predictions, scoring...", time.ctime())    
     check = svmR.score(Xtrain,ytrain)
     print("Done with all prediction, saving outputs.", time.ctime())
-    folder = util.string_appendDateAndTime(learn_util.getSpan(filename)) + modelType + '/'
-    path = c.PATH_TO_RESOURCES + '/101_trajectories/' + folder
+    subfolder = util.string_appendDateAndTime(modelType) + '/'
+    path = learn_util.makePathToTrajectories(filename) + subfolder
     print('model ', modelType, ': score = ', score, 'train_score = ', check)
     np.savetxt(path + 'ACTUALS', ytest)
     np.savetxt(path + 'PREDICTIONS-TEST', predictions)
