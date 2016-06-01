@@ -39,6 +39,11 @@ print(ytrain.shape)
 print(ytest.shape)
 #otherwise, read from files
 
+#run this after the model is fit
+#if using a model with specific values (like penalties), include that in type
+def saveModelStuff(model, modelType='SVM', Xtest, ytest, filename):
+    predictions = model.predict(Xtest)
+    score = svmR.score(Xtest,ytest)
 
 
 #actual learn stuff
