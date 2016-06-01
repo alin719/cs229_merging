@@ -14,7 +14,7 @@ import time
 filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
 
 repickTrainTest = 1 #change if just want to recalculate and train/testIDs are in memory
-remakeData = -1 #change to 0 after loaded first time, 0 to read, -1 to use memory
+remakeData = 0 #change to 0 after loaded first time, 0 to read, -1 to use memory
 
 #if xtrain has not been loaded, do that
 
@@ -41,16 +41,16 @@ print(ytest.shape)
 
 #run this after the model is fit
 #if using a model with specific values (like penalties), include that in type
-def saveModelStuff(model, modelType='SVM', Xtest, ytest, filename):
-    predictions = model.predict(Xtest)
-    score = svmR.score(Xtest,ytest)
+# def saveModelStuff(model, modelType='SVM', Xtest, ytest, filename):
+#     predictions = model.predict(Xtest)
+#     score = svmR.score(Xtest,ytest)
 
 
 #actual learn stuff
 from sklearn import svm
-diff = ytest-np.array(predictions)
-norm = np.linalg.norm(diff)
-outputsSVM = [['def','def',score,check,norm]] #already been computed
+#diff = ytest-np.array(predictions)
+#norm = np.linalg.norm(diff)
+#outputsSVM = [['def','def',score,check,norm]] #already been computed
 for penalties in [100,1000,10000]:
     for eps in [0.00001,0.000001]:
         svmR = svm.SVR(C=penalties,epsilon=eps,cache_size=1500) #kernel='rbf',
