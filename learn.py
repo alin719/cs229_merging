@@ -22,10 +22,12 @@ import os
 filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
 
 repickTrainTest = 0 #1 to recalulate, 0 to load, -1 to use memory
+seed = None
 remakeData = -1 #1 to recalulate, 0 to load, -1 to use memory
 
+
 if repickTrainTest == 1:
-    trainIDs, testIDs = learn_util.makeTrainTestData(filename, .75)
+    trainIDs, testIDs = learn_util.makeTrainTestData(filename, .75, seed)
 elif repickTrainTest == 0:
     trainIDs, testIDs = learn_util.loadTrainTestData(filename)
 

@@ -155,11 +155,12 @@ def makeFullPath(filename, end=''):
     path = makePathToTrajectories(filename)
     return path + end
 
-def makeTrainTestData(filename, portionTrain):
+def makeTrainTestData(filename, portionTrain, seed=None):
     # example filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
     filepath = makePathMR(filename, '-mergerMinRanges')
     MR = np.loadtxt(filepath, dtype='int')
     traintest = [[],[]]
+    random.seed([seed])
     if not numUsing == 0:
         MR = MR[:numUsing]
     for row in MR:
