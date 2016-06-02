@@ -129,12 +129,12 @@ of the work
 """
 
 #each vehicle has its full entry in the dict.
-def GetGridsFromFrameDict(frameDict):
+def GetGridsFromFrameDict(frameDict, mean_centered):
     gridDict = {}
     counter = 0
     for i in frameDict:
         frame = frameDict[i]
-        grid = FrameToGrid(frame)
+        grid = FrameToGrid(frame, mean_centered)
         gridDict[i] = deepcopy(grid)
         counter += 1
         if counter % 500 == 0:

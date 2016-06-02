@@ -33,7 +33,8 @@ elif repickTrainTest == 0:
     trainIDs, testIDs = learn_util.loadTrainTestData(filename)
 
 if remakeData == 1:
-    print("Recalculating all data",time.ctime())
+    print("Recalculating all data, mean_centered =",mean_centered,"predicting",predict,"position.")
+    print("started at",time.ctime())
     Xtrain, Xtest = learn_util.getX(filename, trainIDs, testIDs, mean_centered)
     print("Finished gathering and formatting X data",time.ctime())
     ytrain, ytest = learn_util.getY(filename, trainIDs, testIDs, predict)
@@ -41,7 +42,7 @@ if remakeData == 1:
     learn_util.saveExampleData(filename, Xtrain, ytrain, Xtest, ytest, mean_centered, predict)
 elif remakeData == 0:
     print("Loading data from file...",time.ctime())
-    Xtrain, ytrain, Xtest, ytest = learn_util.readExampleData(filename, mean_centered, predicts)
+    Xtrain, ytrain, Xtest, ytest = learn_util.readExampleData(filename, mean_centered, predict)
 
 print(Xtrain.shape)
 print(Xtest.shape)
