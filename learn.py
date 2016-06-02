@@ -54,21 +54,22 @@ def saveModelStuff(model, modelType, Xtest, ytest, Xtrain, ytrain, filename): #m
     predictions = model.predict(Xtest)
     print ("Done with predictions, scoring...", time.ctime())    
     score = svmR.score(Xtest,ytest)
-    print("Done with all prediction, saving outputs.", time.ctime())
-    subfolder = util.string_appendDateAndTime(modelType) + '/'
-    path = learn_util.makePathToTrajectories(filename) + subfolder
-  
-    np.savetxt(path + 'ACTUALS-TEST.txt', ytest)
-    np.savetxt(path + 'PREDICTIONS-TEST.txt', predictions)
-    np.savetxt(path + 'SCORE-TEST.txt', score)    
     #print ("Getting predictions on train data...", time.ctime())    
     #predictionsTrain = model.predict(Xtrain)
-    print ("Done with predictions, scoring...", time.ctime())    
+    print ("Scoring check...", time.ctime())    
     check = svmR.score(Xtrain,ytrain)
-      
+    
+    print("Done with all testing, saving outputs.", time.ctime())
+    subfolder = util.string_appendDateAndTime(modelType) + '/'
+    path = learn_util.makePathToTrajectories(filename) + subfolder
+    if not os.path.exists(path):
+        os.makedirs(path)  
+    np.savetxt(path + 'ACTUALS-TEST.txt', ytest)
+    np.savetxt(path + 'PREDICTIONS-TEST.txt', predictions)
+    np.savetxt(path + 'SCORE-TEST.txt', np.array([score]))         
     #np.savetxt(path + 'ACTUALS-TRAIN.txt', ytrain)
     #np.savetxt(path + 'PREDICTIONS-TRAIN.txt', predictionsTrain)
-    np.savetxt(path + 'SCORE-TRAIN.txt', check)
+    np.savetxt(path + 'SCORE-TRAIN.txt', np.array([check]))
     
     joblib.dump(model, path + 'MODEL')
     print('model ', modelType, ': score = ', score, 'train_score = ', check)
@@ -87,7 +88,7 @@ def saveModelStuff(model, modelType, Xtest, ytest, Xtrain, ytrain, filename): #m
 svmR = svm.SVR(cache_size=2500) #default,
 print("Fitting default model...", time.ctime())
 svmR.fit(Xtrain,ytrain)
-saveModelStuff(svmR, 'SVM-default-default', Xtest, ytest, Xtrain, ytrain, filename)
+saveModelStuff(svmR, 'SVM-default=1-default=0.1', Xtest, ytest, Xtrain, ytrain, filename)
 for penalties in [10,100,10000]:
     for eps in [0.0001,0.000001]:
         svmR = svm.SVR(C=penalties,epsilon=eps,cache_size=2500) #kernel='rbf',
