@@ -166,8 +166,20 @@ def makeTrainTestData(filename, portionTrain):
         traintest[random() > portionTrain].append(row[0])
     train = traintest[0]
     test = traintest[1]
+    filepathTrain = makeFullPath(filename, 'trainIDs.txt')
+    filepathTest = makeFullPath(filename, 'testIDs.txt')
+    np.savetxt(filepathTrain, train)
+    np.savetxt(filepathTest, test)
     return train, test
 
+def loadTrainTestData(filename):
+    filepathTrain = makeFullPath(filename, 'trainIDs.txt')
+    filepathTest = makeFullPath(filename, 'testIDs.txt')
+    trainIDs = np.loadtxt(filepathTrain)
+    testIDs = np.loadtxt(filepathTest)
+    return trainIDs, testIDs
+
+    
 def saveSparse(filepath, X):
     data = X.data
     indices = X.indices
