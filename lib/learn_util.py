@@ -30,7 +30,7 @@ def removeIDfromGrid(Frame, VID, Grid):
          #recalculate velocities?
     else:
         # Gave error with =[0,0,0], apparently grid is of size 6 not 3...
-        Grid[indexX][indexY] = [0,0,0,0,0,0]
+        Grid[indexX][indexY] = [0,0,0]
     # Did not check all grids, but the first grid seems to be all 0's... seems wrong?
     return Grid
 

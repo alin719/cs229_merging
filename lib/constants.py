@@ -24,8 +24,8 @@ Following = 16-1
 Spacing = 17-1
 Headway = 18-1
 
-path101 = PATH_TO_RESOURCES+'/101_trajectories/'
-path80 = PATH_TO_RESOURCES+'/80_trajectories/'
+path101 = os.getcwd()+'res/101_trajectories/'
+path80 = os.getcwd()+'res/80_trajectories/'
 
 file101_1 = 'aug_trajectories-0750am-0805am'
 file101_2 = 'aug_trajectories-0805am-0820am'
@@ -33,9 +33,9 @@ file101_3 = 'aug_trajectories-0820am-0835am'
 file80_1 = 'aug_trajectories-0400-0415'
 file80_2 = 'aug_trajectories-0500-0515'
 file80_3 = 'aug_trajectories-0515-0530'
-paths=[path101+lu.getSpan(file101_1)+'/'+file101_1[4:], 
-       path101+lu.getSpan(file101_2)+'/'+file101_2[4:],
-       path101+lu.getSpan(file101_3)+'/'+file101_3[4:]]
+paths=[path101+file101_1[-17:][:-4]+'/'+file101_1[4:], 
+       path101+file101_2[-17:][:-4]+'/'+file101_2[4:],
+       path101+file101_3[-17:][:-4]+'/'+file101_3[4:]]
        #,path80+file80_1, path80+file80_2, path80+file80_3]
 
 
