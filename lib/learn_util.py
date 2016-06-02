@@ -18,7 +18,7 @@ numUsing = 0 # 0 to use all
 
 '''Returns the startX and startY for all merge vehicles'''
 def getStartVals(filename):
-    filepath = makePathMR(filename, '-mergerStartTrajectories')
+    filepath = makeFullPath(filename, '-mergerStartTrajectories')
     A = np.loadtxt(filepath)
     return A[:,[constants.LocalX,constants.LocalY]]
 
@@ -82,7 +82,7 @@ def getX(filename, trainIDs, testIDs):
     path = os.getcwd()+'/'
     frameDict = futil.LoadDictFromTxt(path+filename, 'frame')
     dictOfGrids = futil.GetGridsFromFrameDict(frameDict)
-    filepath = makePathMR(filename, '-mergerMinRanges')
+    filepath = makeFullPath(filename, '-mergerMinRanges')
     MR = np.loadtxt(filepath, dtype='int')
     '''MR=MergeRanges. MR[:,0]=merge ids, MR[:,1]=start frame, MR[:,2] = end'''
     print ("Done loading in getX")
@@ -118,7 +118,7 @@ def getX(filename, trainIDs, testIDs):
 def getY(filename, trainIDs, testIDs):
     path = os.getcwd()+'/'
     IDDict = futil.LoadDictFromTxt(path+filename, 'vid')
-    filepath = makePathMR(filename, '-mergerMinRanges')
+    filepath = makeFullPath(filename, '-mergerMinRanges')
     MR = np.loadtxt(filepath, dtype='int')
     Ytrain = np.array([])    #will have numTrain*numFrames rows and 1 column
     Ytest = np.array([])
@@ -134,6 +134,7 @@ def getY(filename, trainIDs, testIDs):
             print("Finished getting Y data for Merger with VID:",row[0]," and it is a test example")
     return np.ascontiguousarray(Ytrain), np.ascontiguousarray(Ytest)
     
+#discontinued
 def makePathMR(filename, end):
     path = os.getcwd()+'/'
     a = len('aug_trajectories-0750am-0805am.txt')
@@ -147,13 +148,13 @@ def makePathToTrajectories(filename):
     path1 = constants.PATH_TO_RESOURCES + '/' + outerFolder + '/' 
     return path1 + getSpan(filename) + '/'
 
-def makeFullPath(filename, end):
+def makeFullPath(filename, end=None):
     path = makePathToTrajectories
     return path + end
 
 def makeTrainTestData(filename, portionTrain):
     # example filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
-    filepath = makePathMR(filename, '-mergerMinRanges')
+    filepath = makeFullPath(filename, '-mergerMinRanges')
     MR = np.loadtxt(filepath, dtype='int')
     traintest = [[],[]]
     if not numUsing == 0:

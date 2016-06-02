@@ -201,7 +201,7 @@ def FrameToGrid(frame):
         # to edit MIN/MAX_GRID values.
         gridX, gridY = GetGridIndices(veh.getX(), veh.getY())
         grid[gridX][gridY] += veh.getGridInfo()
-        grid = MeanCenterGrid(grid)
+        #grid = MeanCenterGrid(grid)
     return grid
 
 """
