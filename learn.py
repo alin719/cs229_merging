@@ -21,14 +21,17 @@ import os
 #This will probably have to be made better at some point
 filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
 
-repickTrainTest = 1 #change if just want to recalculate and train/testIDs are in memory
+repickTrainTest = 0 #change if just want to recalculate and train/testIDs are in memory
 remakeData = 1 #change to 0 after loaded first time, 0 to read, -1 to use memory
 
 #if xtrain has not been loaded, do that
-
+if repickTrainTest == 1:
+    trainIDs, testIDs = learn_util.makeTrainTestData(filename, .75)
+elif repickTrainTest == 0:
+    trainIDs, testIDs = learn_util.loadTrainTestData(filename)
+ 
+  
 if remakeData == 1:
-    if repickTrainTest == 1:
-        trainIDs, testIDs = learn_util.makeTrainTestData(filename, .75)
     print("Recalculating all data",time.ctime())
     Xtrain, Xtest = learn_util.getX(filename, trainIDs, testIDs)
     print("Finished gathering and formatting X data",time.ctime())
