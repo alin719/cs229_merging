@@ -14,6 +14,7 @@ import time
 from sklearn.externals import joblib
 from sklearn import svm
 from sklearn import linear_model
+import os
 
 
 
@@ -21,7 +22,7 @@ from sklearn import linear_model
 filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
 
 repickTrainTest = 1 #change if just want to recalculate and train/testIDs are in memory
-remakeData = 1 #change to 0 after loaded first time, 0 to read, -1 to use memory
+remakeData = -1 #change to 0 after loaded first time, 0 to read, -1 to use memory
 
 #if xtrain has not been loaded, do that
 
@@ -49,24 +50,29 @@ print(ytest.shape)
 #run this after the model is fit
 #if using a model with specific values (like penalties), include that in type
 def saveModelStuff(model, modelType, Xtest, ytest, Xtrain, ytrain, filename): #modelType = 'SVM'     
-    print("Done fitting model, getting prdeictions...", time.ctime())
+    print("Done fitting model, getting predictions...", time.ctime())
     predictions = model.predict(Xtest)
     print ("Done with predictions, scoring...", time.ctime())    
     score = svmR.score(Xtest,ytest)
-    print ("Getting prdeictions on train data...", time.ctime())    
-    predictionsTrain = model.predict(Xtrain)
-    print ("Done with predictions, scoring...", time.ctime())    
-    check = svmR.score(Xtrain,ytrain)
     print("Done with all prediction, saving outputs.", time.ctime())
     subfolder = util.string_appendDateAndTime(modelType) + '/'
     path = learn_util.makePathToTrajectories(filename) + subfolder
-    print('model ', modelType, ': score = ', score, 'train_score = ', check)
-    np.savetxt(path + 'ACTUALS', ytest)
-    np.savetxt(path + 'PREDICTIONS-TEST', predictions)
-    np.savetxt(path + 'PREDICTIONS-TRAIN', predictionsTrain)
-    np.savetxt(path + 'SCORE-TEST', score)
-    np.savetxt(path + 'SCORE-TRAIN', check)
+  
+    np.savetxt(path + 'ACTUALS-TEST.txt', ytest)
+    np.savetxt(path + 'PREDICTIONS-TEST.txt', predictions)
+    np.savetxt(path + 'SCORE-TEST.txt', score)    
+    #print ("Getting predictions on train data...", time.ctime())    
+    #predictionsTrain = model.predict(Xtrain)
+    print ("Done with predictions, scoring...", time.ctime())    
+    check = svmR.score(Xtrain,ytrain)
+      
+    #np.savetxt(path + 'ACTUALS-TRAIN.txt', ytrain)
+    #np.savetxt(path + 'PREDICTIONS-TRAIN.txt', predictionsTrain)
+    np.savetxt(path + 'SCORE-TRAIN.txt', check)
+    
     joblib.dump(model, path + 'MODEL')
+    print('model ', modelType, ': score = ', score, 'train_score = ', check)
+    
 
 #actual learn stuff
 # def saveModelStuff(model, modelType='SVM', Xtest, ytest, filename):
@@ -78,14 +84,19 @@ def saveModelStuff(model, modelType, Xtest, ytest, Xtrain, ytrain, filename): #m
 #diff = ytest-np.array(predictions)
 #norm = np.linalg.norm(diff)
 #outputsSVM = [['def','def',score,check,norm]] #already been computed
-for penalties in [10, 100,1000,10000]:
-    for eps in [0.0001,0.00001,0.000001]:
-        svmR = svm.SVR(C=penalties,epsilon=eps,cache_size=1500) #kernel='rbf',
-        print("Fitting Model...", time.ctime())
+svmR = svm.SVR(cache_size=2500) #default,
+print("Fitting default model...", time.ctime())
+svmR.fit(Xtrain,ytrain)
+saveModelStuff(svmR, 'SVM-default-default', Xtest, ytest, Xtrain, ytrain, filename)
+for penalties in [10,100,10000]:
+    for eps in [0.0001,0.000001]:
+        svmR = svm.SVR(C=penalties,epsilon=eps,cache_size=2500) #kernel='rbf',
+        print("Fitting svm model...", time.ctime())
         svmR.fit(Xtrain,ytrain)
-        saveModelStuff(svmR, 'SVM-'+penalties+'-'+eps, Xtest, ytest, Xtrain, ytrain, filename)
+        saveModelStuff(svmR, 'SVM-'+str(penalties)+'-'+str(eps), Xtest, ytest, Xtrain, ytrain, filename)
 
-linmod1 = linear_model.LinearRegression()
+linmod1 = linear_model.LinearRegression() #aka least squares
+print("Fitting linreg model...", time.ctime())
 linmod1.fit(Xtrain, ytrain)
 saveModelStuff(linmod1, 'linReg', Xtest, ytest, Xtrain, ytrain, filename)
 #from sklearn import linear_model

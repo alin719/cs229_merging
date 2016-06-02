@@ -146,7 +146,10 @@ def getSpan(filename):
 def makePathToTrajectories(filename):
     outerFolder = filename[4:-35]
     path1 = os.getcwd() + '/res' + '/' + outerFolder + '/' 
-    return path1 + getSpan(filename) + '/'
+    path = path1 + getSpan(filename) + '/'  
+    if not os.path.exists(path):
+        os.makedirs(path)  
+    return path
 
 def makeFullPath(filename, end=''):
     path = makePathToTrajectories(filename)
