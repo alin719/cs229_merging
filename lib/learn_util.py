@@ -11,6 +11,8 @@ import os
 from scipy import sparse
 from random import random
 from lib import constants
+from lib import vehicleclass as v
+
 
 numUsing = 0 # 0 to use all
 
@@ -22,15 +24,20 @@ def getStartVals(filename):
 
 '''Removes the entry corresponding to this vid from the grid'''
 def removeIDfromGrid(Frame, VID, Grid):
-    vehicleTraj = Frame[VID]
-    [xpos,ypos]=vehicleTraj[[constants.LocalX,constants.LocalY]]
+    #vehicleTraj = Frame[VID]
+    vehicleData = Frame[VID]
+    veh = v.vehicle(vehicleData)
+    xpos = veh.x
+    ypos = veh.y
+    #[xpos,ypos]=vehicleTraj[[constants.LocalX,constants.LocalY]]
     indexX, indexY = futil.GetGridIndices(xpos,ypos)
-    if not Grid[indexX][indexY][0] == 0:
-         Grid[indexX][indexY][0] = Grid[indexX][indexY][0]-1
-         #recalculate velocities?
-    else:
+    if futil.InGridBounds(veh.getX(), veh.getY()):
+        if Grid[indexX][indexY][0] > 1:
+            Grid[indexX][indexY][0] = Grid[indexX][indexY][0]-1
+            #recalculate velocities?
+        else:
         # Gave error with =[0,0,0], apparently grid is of size 6 not 3...
-        Grid[indexX][indexY] = [0,0,0]
+            Grid[indexX][indexY] = [0,0,0]
     # Did not check all grids, but the first grid seems to be all 0's... seems wrong?
     return Grid
 
@@ -78,6 +85,7 @@ def getX(filename, trainIDs, testIDs):
     filepath = makePathMR(filename, '-mergerMinRanges')
     MR = np.loadtxt(filepath, dtype='int')
     '''MR=MergeRanges. MR[:,0]=merge ids, MR[:,1]=start frame, MR[:,2] = end'''
+    print ("Done loading in getX")
     start = getStartVals(filename)    
     Xtrain = np.array([])   #will have numTrain*numFrames rows and size(grid)+1 columns
     Xtest = np.array([])

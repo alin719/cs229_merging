@@ -191,7 +191,7 @@ def FrameToGrid(frame):
     #dummyData = frame[(frame.keys()[0])]
     #dummyVehicle = v.vehicle(dummyData)
 
-    grid = np.zeros((c.X_DIV + 1, c.Y_DIV + 1, 3))#dummyVehicle.getGridInfoLen())) # is number of elems in trajectory info
+    grid = np.zeros((c.X_DIV + 2, c.Y_DIV + 2, 3))#dummyVehicle.getGridInfoLen())) # is number of elems in trajectory info
     for vid in frame:
         vehicleData = frame[vid]
         veh = v.vehicle(vehicleData)
