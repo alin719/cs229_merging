@@ -38,3 +38,14 @@ TODO:
  Recap:
  Current pipeline for loading grids is:
  LoadDataFromTxt -> GetGridsFromFrameDict, then access using frame IDs.
+ 
+ filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
+trainIDs, testIDs = learn_util.makeTrainTestData(filename, .75)
+print("adsfd")
+path = os.getcwd()+'/'
+frameDict = futil.LoadDictFromTxt(path+filename, 'frame')
+print("5412334")
+dictOfGrids = futil.GetGridsFromFrameDict(frameDict)
+print("Adfsa")
+filepath = makePathMR(filename, '-mergerMinRanges')
+MR = np.loadtxt(filepath, dtype='int')
