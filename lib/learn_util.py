@@ -145,11 +145,11 @@ def getSpan(filename):
     
 def makePathToTrajectories(filename):
     outerFolder = filename[4:-35]
-    path1 = constants.PATH_TO_RESOURCES + '/' + outerFolder + '/' 
+    path1 = os.getcwd() + '/res' + '/' + outerFolder + '/' 
     return path1 + getSpan(filename) + '/'
 
-def makeFullPath(filename, end=None):
-    path = makePathToTrajectories
+def makeFullPath(filename, end=''):
+    path = makePathToTrajectories(filename)
     return path + end
 
 def makeTrainTestData(filename, portionTrain):
@@ -181,26 +181,26 @@ def loadSparse(filepath):
     
 def saveExampleData(filename,Xtrain,ytrain,Xtest,ytest):
     filepath_Xtrain = makeFullPath(filename, '-Xtrain')
-    saveSparse(filepath_Xtrain[:-4], Xtrain)
+    saveSparse(filepath_Xtrain, Xtrain)
     filepath_ytrain = makeFullPath(filename, '-ytrain')
     np.savetxt(filepath_ytrain, ytrain)
     filepath_Xtest = makeFullPath(filename, '-Xtest')
-    saveSparse(filepath_Xtest[:-4], Xtest)
+    saveSparse(filepath_Xtest, Xtest)
     filepath_ytest = makeFullPath(filename, '-ytest')
     np.savetxt(filepath_ytest, ytest)
 
 def readExampleData(filename):
     filepath_Xtrain = makeFullPath(filename, '-Xtrain')
-    Xtrain = loadSparse(filepath_Xtrain[:-4])
-    print("Xtrain loaded.")
+    Xtrain = loadSparse(filepath_Xtrain)
+    print("Xtrain loaded.",time.ctime())
     filepath_Xtest = makeFullPath(filename, '-Xtest')
-    Xtest = loadSparse(filepath_Xtest[:-4])
-    print("Xtest loaded.")
+    Xtest = loadSparse(filepath_Xtest)
+    print("Xtest loaded.",time.ctime())
     filepath_ytrain = makeFullPath(filename, '-ytrain')
     ytrain = np.loadtxt(filepath_ytrain)
-    print("ytrain loaded.")
+    print("ytrain loaded.",time.ctime())
     filepath_ytest = makeFullPath(filename, '-ytest')
     ytest = np.loadtxt(filepath_ytest)
-    print("ytest loaded.")
+    print("ytest loaded.",time.ctime())
     return Xtrain, ytrain, Xtest, ytest
     

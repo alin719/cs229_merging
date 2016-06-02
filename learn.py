@@ -28,14 +28,14 @@ remakeData = 1 #change to 0 after loaded first time, 0 to read, -1 to use memory
 if remakeData == 1:
     if repickTrainTest == 1:
         trainIDs, testIDs = learn_util.makeTrainTestData(filename, .75)
-    print("Recalculating all data")
+    print("Recalculating all data",time.ctime())
     Xtrain, Xtest = learn_util.getX(filename, trainIDs, testIDs)
-    print("Finished gathering and formatting X data")
+    print("Finished gathering and formatting X data",time.ctime())
     ytrain, ytest = learn_util.getY(filename, trainIDs, testIDs)
-    print("Finished gathering and formatting Y data")
+    print("Finished gathering and formatting Y data",time.ctime())
     learn_util.saveExampleData(filename, Xtrain, ytrain, Xtest, ytest)
 elif remakeData == 0:
-    print("Loading data from file...")
+    print("Loading data from file...",time.ctime())
     Xtrain, ytrain, Xtest, ytest = learn_util.readExampleData(filename)
 
 print(Xtrain.shape)

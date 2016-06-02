@@ -38,6 +38,7 @@ paths=[path101+file101_1[-17:][:-4]+'/'+file101_1[4:],
        path101+file101_3[-17:][:-4]+'/'+file101_3[4:]]
        #,path80+file80_1, path80+file80_2, path80+file80_3]
 
+PATH_TO_RESOURCES = os.getcwd() + '/res'
 
 PATH_TO_ROOT = None
 PATH_TO_RESOURCES = None
