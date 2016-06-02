@@ -131,10 +131,14 @@ of the work
 #each vehicle has its full entry in the dict.
 def GetGridsFromFrameDict(frameDict):
     gridDict = {}
+    counter = 0
     for i in frameDict:
         frame = frameDict[i]
         grid = FrameToGrid(frame)
         gridDict[i] = deepcopy(grid)
+        counter += 1
+        if counter % 500 == 0:
+            print("Processed ", counter, " frames.")
     return gridDict
 
 """
@@ -160,20 +164,30 @@ Takes in a grid, and subtracts the mean of all values besides #vehicles.
 
 def MeanCenterGrid(grid):
     x, y, z = grid.shape
-    means = np.zeros(z)
-    for i in range(x):
-        for j in range(y):
-            numVehicles = grid[i][j][0]
-            scaledVals = grid[i][j]*numVehicles
-            scaledVals[0] = numVehicles
-            means += scaledVals
-    means /= means[0]
+    sum1 = np.sum(grid,1)
+    sum2 = np.sum(sum1, 0)
+    numVehicles = sum2[0]
+    means = sum2 / numVehicles
     means[0] = 0
     for i in range(x):
         for j in range(y):
             if grid[i][j][0] != 0:
                 grid[i][j] -= means
-    return grid
+
+    # means = np.zeros(z)
+    # for i in range(x):
+    #     for j in range(y):
+    #         numVehicles = grid[i][j][0]
+    #         scaledVals = grid[i][j]*numVehicles
+    #         scaledVals[0] = numVehicles
+    #         means += scaledVals
+    # means /= means[0]
+    # means[0] = 0
+    # for i in range(x):
+    #     for j in range(y):
+    #         if grid[i][j][0] != 0:
+    #             grid[i][j] -= means
+    return
 
     
 
@@ -201,7 +215,7 @@ def FrameToGrid(frame):
         # to edit MIN/MAX_GRID values.
         gridX, gridY = GetGridIndices(veh.getX(), veh.getY())
         grid[gridX][gridY] += veh.getGridInfo()
-        #grid = MeanCenterGrid(grid)
+        MeanCenterGrid(grid)
     return grid
 
 """

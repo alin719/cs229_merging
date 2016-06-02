@@ -3,7 +3,7 @@ import numpy, scipy, math, random
 import os, sys, time, importlib
 import tokenize, re, string
 import json, unicodedata
-import lib.constants as c
+#import lib.constants as c
 from lib import constants as c
 
 # All variables are being referenced by their index instead of their original
