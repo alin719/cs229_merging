@@ -42,8 +42,8 @@ def outputFigures(outerFolderName, subfolderName):
     fig_size[1] = 8
     plt.rcParams["figure.figsize"] = fig_size
     EXAMPLE_SIZE = 254
-
-    for trial in range(25):
+    numTrials = len(x)/EXAMPLE_SIZE
+    for trial in range(int(numTrials)):
         curDiff = abs(diff[trial*EXAMPLE_SIZE: (trial+1)*EXAMPLE_SIZE])
         loss = np.sum(curDiff)
         avgLoss = np.mean(curDiff)
