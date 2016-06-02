@@ -19,7 +19,7 @@ numUsing = 0 # 0 to use all
 
 '''Returns the startX and startY for all merge vehicles'''
 def getStartVals(filename):
-    filepath = makePathMR(filename, '-mergerStartTrajectories')
+    filepath = makeFullPath(filename, '-mergerStartTrajectories.txt')
     A = np.loadtxt(filepath)
     return A[:,[constants.LocalX,constants.LocalY]]
 
@@ -83,7 +83,7 @@ def getX(filename, trainIDs, testIDs):
     print("Gotten frameDict",time.ctime())
     dictOfGrids = futil.GetGridsFromFrameDict(frameDict)
     print("Gotten dictOfGrids",time.ctime())
-    filepath = makePathMR(filename, '-mergerMinRanges')
+    filepath = makeFullPath(filename, '-mergerMinRanges.txt')
     MR = np.loadtxt(filepath, dtype='int')
     '''MR=MergeRanges. MR[:,0]=merge ids, MR[:,1]=start frame, MR[:,2] = end'''
     print ("Done loading in getX", time.ctime())
@@ -119,7 +119,7 @@ def getX(filename, trainIDs, testIDs):
 def getY(filename, trainIDs, testIDs):
     path = os.getcwd()+'/'
     IDDict = futil.LoadDictFromTxt(path+filename, 'vid')
-    filepath = makePathMR(filename, '-mergerMinRanges')
+    filepath = makeFullPath(filename, '-mergerMinRanges.txt')
     MR = np.loadtxt(filepath, dtype='int')
     Ytrain = np.array([])    #will have numTrain*numFrames rows and 1 column
     Ytest = np.array([])
@@ -151,13 +151,14 @@ def makePathToTrajectories(filename):
         os.makedirs(path)  
     return path
 
-def makeFullPath(filename, end=''):
+#subfolder in form 'asdads/'
+def makeFullPath(filename, end='',subfolder=''):
     path = makePathToTrajectories(filename)
-    return path + end
+    return path + subfolder + end
 
 def makeTrainTestData(filename, portionTrain):
     # example filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
-    filepath = makePathMR(filename, '-mergerMinRanges')
+    filepath = makeFullPath(filename, '-mergerMinRanges.txt')
     MR = np.loadtxt(filepath, dtype='int')
     traintest = [[],[]]
     if not numUsing == 0:

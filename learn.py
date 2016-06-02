@@ -22,7 +22,7 @@ import os
 filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
 
 repickTrainTest = 1 #change if just want to recalculate and train/testIDs are in memory
-remakeData = -1 #change to 0 after loaded first time, 0 to read, -1 to use memory
+remakeData = 1 #change to 0 after loaded first time, 0 to read, -1 to use memory
 
 #if xtrain has not been loaded, do that
 
@@ -84,13 +84,13 @@ def saveModelStuff(model, modelType, Xtest, ytest, Xtrain, ytrain, filename): #m
 #diff = ytest-np.array(predictions)
 #norm = np.linalg.norm(diff)
 #outputsSVM = [['def','def',score,check,norm]] #already been computed
-svmR = svm.SVR(cache_size=2500) #default,
+svmR = svm.SVR(cache_size=1500) #default,
 print("Fitting default model...", time.ctime())
 svmR.fit(Xtrain,ytrain)
 saveModelStuff(svmR, 'SVM-default-default', Xtest, ytest, Xtrain, ytrain, filename)
 for penalties in [10,100,10000]:
     for eps in [0.0001,0.000001]:
-        svmR = svm.SVR(C=penalties,epsilon=eps,cache_size=2500) #kernel='rbf',
+        svmR = svm.SVR(C=penalties,epsilon=eps,cache_size=1500) #kernel='rbf',
         print("Fitting svm model...", time.ctime())
         svmR.fit(Xtrain,ytrain)
         saveModelStuff(svmR, 'SVM-'+str(penalties)+'-'+str(eps), Xtest, ytest, Xtrain, ytrain, filename)
