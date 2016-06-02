@@ -12,13 +12,14 @@ from scipy import sparse
 from random import random
 from lib import constants
 from lib import vehicleclass as v
+import time
 
 
 numUsing = 0 # 0 to use all
 
 '''Returns the startX and startY for all merge vehicles'''
 def getStartVals(filename):
-    filepath = makeFullPath(filename, '-mergerStartTrajectories')
+    filepath = makePathMR(filename, '-mergerStartTrajectories')
     A = np.loadtxt(filepath)
     return A[:,[constants.LocalX,constants.LocalY]]
 
@@ -36,9 +37,7 @@ def removeIDfromGrid(Frame, VID, Grid):
             Grid[indexX][indexY][0] = Grid[indexX][indexY][0]-1
             #recalculate velocities?
         else:
-        # Gave error with =[0,0,0], apparently grid is of size 6 not 3...
             Grid[indexX][indexY] = [0,0,0]
-    # Did not check all grids, but the first grid seems to be all 0's... seems wrong?
     return Grid
 
 '''Called for each merging vehicle, gets all the input data.'''
@@ -81,11 +80,13 @@ def getX(filename, trainIDs, testIDs):
     #filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
     path = os.getcwd()+'/'
     frameDict = futil.LoadDictFromTxt(path+filename, 'frame')
+    print("Gotten frameDict",time.ctime())
     dictOfGrids = futil.GetGridsFromFrameDict(frameDict)
-    filepath = makeFullPath(filename, '-mergerMinRanges')
+    print("Gotten dictOfGrids",time.ctime())
+    filepath = makePathMR(filename, '-mergerMinRanges')
     MR = np.loadtxt(filepath, dtype='int')
     '''MR=MergeRanges. MR[:,0]=merge ids, MR[:,1]=start frame, MR[:,2] = end'''
-    print ("Done loading in getX")
+    print ("Done loading in getX", time.ctime())
     start = getStartVals(filename)    
     Xtrain = np.array([])   #will have numTrain*numFrames rows and size(grid)+1 columns
     Xtest = np.array([])
@@ -103,7 +104,7 @@ def getX(filename, trainIDs, testIDs):
                 trainEmpty = False
             else:
                 Xtrain = sparse.vstack((Xtrain,XVID))#,axis=0)
-            print("Finished getting X data for Merger with VID:",row[0]," and it is a training example")
+            print("Finished getting X data for Merger with VID:",row[0]," and it is a training example", time.ctime())
         else:
             if testEmpty == True:
                 Xtest = XVID
@@ -118,7 +119,7 @@ def getX(filename, trainIDs, testIDs):
 def getY(filename, trainIDs, testIDs):
     path = os.getcwd()+'/'
     IDDict = futil.LoadDictFromTxt(path+filename, 'vid')
-    filepath = makeFullPath(filename, '-mergerMinRanges')
+    filepath = makePathMR(filename, '-mergerMinRanges')
     MR = np.loadtxt(filepath, dtype='int')
     Ytrain = np.array([])    #will have numTrain*numFrames rows and 1 column
     Ytest = np.array([])
@@ -134,7 +135,6 @@ def getY(filename, trainIDs, testIDs):
             print("Finished getting Y data for Merger with VID:",row[0]," and it is a test example")
     return np.ascontiguousarray(Ytrain), np.ascontiguousarray(Ytest)
     
-#discontinued
 def makePathMR(filename, end):
     path = os.getcwd()+'/'
     a = len('aug_trajectories-0750am-0805am.txt')
@@ -154,7 +154,7 @@ def makeFullPath(filename, end=None):
 
 def makeTrainTestData(filename, portionTrain):
     # example filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
-    filepath = makeFullPath(filename, '-mergerMinRanges')
+    filepath = makePathMR(filename, '-mergerMinRanges')
     MR = np.loadtxt(filepath, dtype='int')
     traintest = [[],[]]
     if not numUsing == 0:
