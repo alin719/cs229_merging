@@ -27,6 +27,7 @@ def visualizePredictions(predFilename, actualFilename):
     
       
 def outputFigures(outerFolderName, subfolderName):
+    start = time.time()
     #Input parameter example: subfolderName = "SVM-default=1-default=0.1_06-02-2016_12h-59m-52s-selected/"
     targetFolderName = outerFolderName + subfolderName + "/"
     actualFilename = targetFolderName + "ACTUALS-TEST.txt"
@@ -57,7 +58,7 @@ def outputFigures(outerFolderName, subfolderName):
         plt.title(titleString)
         plt.legend()
         plt.axis([trial*EXAMPLE_SIZE, (trial+1)*EXAMPLE_SIZE, 20, 120])
-        targetFile = "trial" + str(trial)
+        targetFile = subfolderName + "_trial" + str(trial)
         extension = ".png"
         targetFileName = targetFolderName + figuresFolder + targetFile + extension
         plt.savefig(targetFileName)
@@ -65,7 +66,9 @@ def outputFigures(outerFolderName, subfolderName):
     totalAverageLoss = np.mean(abs(diff))
     totalLossFile = open(targetFolderName + figuresFolder + str(totalAverageLoss) + "_avgloss.txt", 'w')
     totalLossFile.write("Average Loss = " + str(totalAverageLoss))
-    print("Output figures and loss to " + targetFolderName + figuresFolder)
+    end = time.time()
+    print("\nOutput figures and loss to " + targetFolderName + figuresFolder)
+    print("This took ", end - start , " seconds.")
 
 #Example usage
 outerFolderName = "results/Trial1/"
