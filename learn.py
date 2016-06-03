@@ -21,23 +21,28 @@ import os
 #This will probably have to be made better at some point
 filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
 
-repickTrainTest = 1 #change if just want to recalculate and train/testIDs are in memory
-remakeData = -1 #change to 0 after loaded first time, 0 to read, -1 to use memory
+repickTrainTest = 0 #1 to recalulate, 0 to load, -1 to use memory
+seed = None
+remakeData = 1 #1 to recalulate, 0 to load, -1 to use memory
+mean_centered = 0
+predict = 'Y' #or 'X'
 
-#if xtrain has not been loaded, do that
+if repickTrainTest == 1:
+    trainIDs, testIDs = learn_util.makeTrainTestData(filename, .75, seed)
+elif repickTrainTest == 0:
+    trainIDs, testIDs = learn_util.loadTrainTestData(filename)
 
 if remakeData == 1:
-    if repickTrainTest == 1:
-        trainIDs, testIDs = learn_util.makeTrainTestData(filename, .75)
-    print("Recalculating all data",time.ctime())
-    Xtrain, Xtest = learn_util.getX(filename, trainIDs, testIDs)
+    print("Recalculating all data, mean_centered =",mean_centered,"predicting",predict,"position.")
+    print("started at",time.ctime())
+    Xtrain, Xtest = learn_util.getX(filename, trainIDs, testIDs, mean_centered)
     print("Finished gathering and formatting X data",time.ctime())
-    ytrain, ytest = learn_util.getY(filename, trainIDs, testIDs)
+    ytrain, ytest = learn_util.getY(filename, trainIDs, testIDs, predict)
     print("Finished gathering and formatting Y data",time.ctime())
-    learn_util.saveExampleData(filename, Xtrain, ytrain, Xtest, ytest)
+    learn_util.saveExampleData(filename, Xtrain, ytrain, Xtest, ytest, mean_centered, predict)
 elif remakeData == 0:
     print("Loading data from file...",time.ctime())
-    Xtrain, ytrain, Xtest, ytest = learn_util.readExampleData(filename)
+    Xtrain, ytrain, Xtest, ytest = learn_util.readExampleData(filename, mean_centered, predict)
 
 print(Xtrain.shape)
 print(Xtest.shape)
@@ -88,18 +93,28 @@ def saveModelStuff(model, modelType, Xtest, ytest, Xtrain, ytrain, filename): #m
 svmR = svm.SVR(cache_size=2500) #default,
 print("Fitting default model...", time.ctime())
 svmR.fit(Xtrain,ytrain)
-saveModelStuff(svmR, 'SVM-default=1-default=0.1', Xtest, ytest, Xtrain, ytrain, filename)
+modelType = 'SVM-default=1-default=0.1'
+if mean_centered==1:
+    modelType = modelType + '-mean_centered'
+saveModelStuff(svmR, modelType, Xtest, ytest, Xtrain, ytrain, filename)
 for penalties in [10,100,10000]:
     for eps in [0.0001,0.000001]:
         svmR = svm.SVR(C=penalties,epsilon=eps,cache_size=2500) #kernel='rbf',
         print("Fitting svm model...", time.ctime())
         svmR.fit(Xtrain,ytrain)
-        saveModelStuff(svmR, 'SVM-'+str(penalties)+'-'+str(eps), Xtest, ytest, Xtrain, ytrain, filename)
+        model_type = 'SVM-'+str(penalties)+'-'+str(eps)
+        if mean_centered==1:
+            modelType = model_type + '-mean_centered'
+        saveModelStuff(svmR, model_type , Xtest, ytest, Xtrain, ytrain, filename)
 
 linmod1 = linear_model.LinearRegression() #aka least squares
 print("Fitting linreg model...", time.ctime())
 linmod1.fit(Xtrain, ytrain)
-saveModelStuff(linmod1, 'linReg', Xtest, ytest, Xtrain, ytrain, filename)
+modelType = 'linReg'
+if mean_centered==1:
+    modelType = modelType + '-mean_centered'
+
+saveModelStuff(linmod1, modelType, Xtest, ytest, Xtrain, ytrain, filename)
 #from sklearn import linear_model
 #linmod1 = linear_model.LinearRegression()
 #linmod1.fit(Xtrain, ytrain)

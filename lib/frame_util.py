@@ -129,12 +129,12 @@ of the work
 """
 
 #each vehicle has its full entry in the dict.
-def GetGridsFromFrameDict(frameDict):
+def GetGridsFromFrameDict(frameDict, mean_centered):
     gridDict = {}
     counter = 0
     for i in frameDict:
         frame = frameDict[i]
-        grid = FrameToGrid(frame)
+        grid = FrameToGrid(frame, mean_centered)
         gridDict[i] = deepcopy(grid)
         counter += 1
         if counter % 500 == 0:
@@ -200,7 +200,7 @@ that location.
 
 """
 
-def FrameToGrid(frame):
+def FrameToGrid(frame, mean_centered):
     #Creates grid determined by DIV numbers in constants.py
     #dummyData = frame[(frame.keys()[0])]
     #dummyVehicle = v.vehicle(dummyData)
@@ -215,7 +215,8 @@ def FrameToGrid(frame):
         # to edit MIN/MAX_GRID values.
         gridX, gridY = GetGridIndices(veh.getX(), veh.getY())
         grid[gridX][gridY] += veh.getGridInfo()
-        MeanCenterGrid(grid)
+        if mean_centered == 1:
+            MeanCenterGrid(grid)
     return grid
 
 """
