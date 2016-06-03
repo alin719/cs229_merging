@@ -24,8 +24,8 @@ filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
 repickTrainTest = 0 #1 to recalulate, 0 to load, -1 to use memory
 seed = None
 remakeData = 1 #1 to recalulate, 0 to load, -1 to use memory
-mean_centered = 0
-predict = 'Y' #or 'X'
+mean_centered = 1 #1 to mean center, 0 to not mean center
+predict = 'X' #'Y' or 'X'
 
 if repickTrainTest == 1:
     trainIDs, testIDs = learn_util.makeTrainTestData(filename, .75, seed)
@@ -58,11 +58,11 @@ def saveModelStuff(model, modelType, Xtest, ytest, Xtrain, ytrain, filename): #m
     print("Done fitting model, getting predictions...", time.ctime())
     predictions = model.predict(Xtest)
     print ("Done with predictions, scoring...", time.ctime())    
-    score = svmR.score(Xtest,ytest)
+    score = model.score(Xtest,ytest)
     #print ("Getting predictions on train data...", time.ctime())    
     #predictionsTrain = model.predict(Xtrain)
     print ("Scoring check...", time.ctime())    
-    check = svmR.score(Xtrain,ytrain)
+    check = model.score(Xtrain,ytrain)
     
     print("Done with all testing, saving outputs.", time.ctime())
     subfolder = util.string_appendDateAndTime(modelType) + '/'
@@ -93,12 +93,12 @@ def saveModelStuff(model, modelType, Xtest, ytest, Xtrain, ytrain, filename): #m
 svmR = svm.SVR(cache_size=2500) #default,
 print("Fitting default model...", time.ctime())
 svmR.fit(Xtrain,ytrain)
-modelType = 'SVM-default=1-default=0.1'
+modelType = 'SVM-1-0.1'
 if mean_centered==1:
     modelType = modelType + '-mean_centered'
 saveModelStuff(svmR, modelType, Xtest, ytest, Xtrain, ytrain, filename)
-for penalties in [10,100,10000]:
-    for eps in [0.0001,0.000001]:
+for penalties in [0.1, 1]:
+    for eps in [1, 0.1]:
         svmR = svm.SVR(C=penalties,epsilon=eps,cache_size=2500) #kernel='rbf',
         print("Fitting svm model...", time.ctime())
         svmR.fit(Xtrain,ytrain)
