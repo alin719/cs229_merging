@@ -17,11 +17,14 @@ def augmentTrajectories():
 
 def findMergers():
     print("Finding merger vehicle information...")
-    for filepath in constants.paths:
+    for (filepath, filename) in constants.paths:
         open(filepath+'.txt', 'r')
-        print("Starting merge stuff for:", filepath)
-        mm.doMinRangesAndStartForMerges(filepath, constants.LaneID, constants.VehicleID,
-                                        constants.FrameID, constants.TotFrames) #MergeLane=7
+        print("Starting merge stuff for:", filepath+'.txt')
+        #mm.doMinRangesAndStartForMerges(filepath, constants.LaneID, constants.VehicleID,
+        #                                constants.FrameID, constants.TotFrames) #MergeLane=7
+        mm.doRangesAndStartForMerges(filepath, constants.LaneID, constants.VehicleID,
+                                        constants.FrameID, constants.TotFrames,
+                                        filename) #MergeLane=7
 
 def main(argv):
     #augmentTrajectories()

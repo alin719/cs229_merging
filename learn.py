@@ -24,8 +24,8 @@ filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
 repickTrainTest = 0 #1 to recalulate, 0 to load, -1 to use memory
 seed = None
 remakeData = 1 #1 to recalulate, 0 to load, -1 to use memory
-mean_centered = 1 #1 to mean center, 0 to not mean center
-predict = 'Y' #'Y' or 'X'
+mean_centered = 0 #1 to mean center, 0 to not mean center
+predict = 'X' #'Y' or 'X'
 
 if repickTrainTest == 1:
     trainIDs, testIDs = learn_util.makeTrainTestData(filename, .75, seed)
@@ -90,26 +90,27 @@ def saveModelStuff(model, modelType, Xtest, ytest, Xtrain, ytrain, filename): #m
 #diff = ytest-np.array(predictions)
 #norm = np.linalg.norm(diff)
 #outputsSVM = [['def','def',score,check,norm]] #already been computed
-svmR = svm.SVR(cache_size=2500) #default,
+'''svmR = svm.SVR(cache_size=2500) #default,
 print("Fitting default model...", time.ctime())
 svmR.fit(Xtrain,ytrain)
-modelType = 'SVM-1-0.1'
+modelType = 'SVM-1-0.1-PREDICT-'+predict
 if mean_centered==1:
     modelType = modelType + '-mean_centered'
-saveModelStuff(svmR, modelType, Xtest, ytest, Xtrain, ytrain, filename, predict)
-for (penalties, eps) in [(1, 1), (0.1,0.1), (0.1,1)]:
-    svmR = svm.SVR(C=penalties,epsilon=eps,cache_size=2500) #kernel='rbf',
-    print("Fitting svm model...", time.ctime())
-    svmR.fit(Xtrain,ytrain)
-    model_type = 'SVM-'+str(penalties)+'-'+str(eps)+'-PREDICT-'+predict
-    if mean_centered==1:
-        modelType = model_type + '-mean_centered'
-    saveModelStuff(svmR, model_type , Xtest, ytest, Xtrain, ytrain, filename)
+saveModelStuff(svmR, modelType, Xtest, ytest, Xtrain, ytrain, filename)'''
+for penalties in [1, 1000]: # this now includes default
+    for eps in [.1, .0000001]:
+        svmR = svm.SVR(C=penalties,epsilon=eps,cache_size=2500) #kernel='rbf',
+        print("Fitting svm model...", time.ctime())
+        svmR.fit(Xtrain,ytrain)
+        model_type = 'SVM-'+str(penalties)+'-'+str(eps)+'-PREDICT-'+predict
+        if mean_centered==1:
+            modelType = model_type + '-mean_centered'
+        saveModelStuff(svmR, model_type , Xtest, ytest, Xtrain, ytrain, filename)
 
 linmod1 = linear_model.LinearRegression() #aka least squares
 print("Fitting linreg model...", time.ctime())
 linmod1.fit(Xtrain, ytrain)
-modelType = 'linReg'
+modelType = 'linReg-PREDICT-'+predict
 if mean_centered==1:
     modelType = modelType + '-mean_centered'
 

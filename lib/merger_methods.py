@@ -5,6 +5,7 @@ Created on Wed May 18 12:48:22 2016
 @author: Derek
 """
 import numpy as np
+from lib import learn_util as lu
 
 def unique(a):
     b = np.diff(a)
@@ -108,6 +109,22 @@ def doMinRangesAndStartForMerges(filepath, LaneCol, VIDCol, FrameCol, TotFrameCo
     saveArrayTxt(filepath+'-mergerMinRanges'+'.txt', Ranges)
     print ("Merge ranges done.")
 
+def doRangesAndStartForMerges(filepath, LaneCol, VIDCol, FrameCol, TotFrameCol,
+                              filename, MergeLane=7):
+    Data = np.loadtxt(filepath+'.txt')
+    Firsts = findFirstInstances(Data, VIDCol)  
+    Mergers = Firsts[Firsts[:,LaneCol]==MergeLane]
+    savepath = lu.makeFullPath(filename, '-mergerStartTrajectories.txt')
+    saveArrayTxt(savepath, Mergers)
+    print ("Start trajectories done.")
+    Starts = Mergers[:,FrameCol]
+    Ends = Starts + Mergers[:,TotFrameCol]
+    Ends.shape=(len(Ends),1)
+    IDStarts = Mergers[:,[VIDCol,FrameCol]]
+    Ranges = np.append(IDStarts, Ends, axis=1)
+    savepath = lu.makeFullPath(filename, '-mergerRanges.txt')
+    saveArrayTxt(savepath, Ranges)
+    print ("Merge ranges done.")
 
     
     
