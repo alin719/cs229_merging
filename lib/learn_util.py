@@ -26,6 +26,8 @@ def getStartVals(filename):
 '''Removes the entry corresponding to this vid from the grid'''
 def removeIDfromGrid(Frame, VID, Grid):
     #vehicleTraj = Frame[VID]
+    if VID not in Frame:
+        return Grid
     vehicleData = Frame[VID]
     veh = v.vehicle(vehicleData)
     xpos = veh.x
@@ -49,7 +51,12 @@ def getXInner(row,dictOfGrids, initPos, dictOfFrames):
         t_elapsed = frame-start        
         grid = dictOfGrids[frame]
         grid = removeIDfromGrid(dictOfFrames[frame],VID,grid)
-        additional = np.append(initPos,t_elapsed)
+        
+        grid2 = dictOfGrids[frame-10]
+        grid2 = removeIDfromGrid(dictOfFrames[frame-10],VID,grid)
+        
+        additional = np.append(t_elapsed, grid2.flatten())
+        #additional = t_elapsed #np.append(initPos,t_elapsed)
         Xrow = np.append(additional,grid.flatten())
         Xrow.shape = (1,len(Xrow))
         if X_for_id.shape == (0,):
