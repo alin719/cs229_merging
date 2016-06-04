@@ -25,7 +25,7 @@ repickTrainTest = 0 #1 to recalulate, 0 to load, -1 to use memory
 seed = None
 remakeData = 1 #1 to recalulate, 0 to load, -1 to use memory
 mean_centered = 0 #1 to mean center, 0 to not mean center
-predict = 'X' #'Y' or 'X'
+predict = 'Y' #'Y' or 'X'
 
 if repickTrainTest == 1:
     trainIDs, testIDs = learn_util.makeTrainTestData(filename, .75, seed)
