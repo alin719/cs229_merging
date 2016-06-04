@@ -8,6 +8,7 @@ import learn_util
 from copy import deepcopy
 import os
 from lib import frame_util as futil
+import shutil
 
 ##Example usage at bottom.
 
@@ -33,11 +34,22 @@ def outputFigures(outerFolderName, subfolderName):
     actualFilename = targetFolderName + "ACTUALS-TEST.txt"
     predFilename = targetFolderName + "PREDICTIONS-TEST.txt"
     figuresFolder = "Figures/"
+
+    #Comment the following line out to not remove folders.
+    shutil.rmtree(targetFolderName + figuresFolder)
+
     if not os.path.exists(targetFolderName + figuresFolder):
         os.makedirs(targetFolderName + figuresFolder)
+    else:
+        #Choose to skip existing folders with return.
+        #continue
+        return
+
 
     x, pred, actual, diff = visualizePredictions(predFilename, actualFilename)
     
+    font = {'family' : 'normal', 'weight' : 'bold', 'size'   : 22}
+    plt.rc('font', **font)
     fig_size = plt.rcParams["figure.figsize"]
     fig_size[0] = 16
     fig_size[1] = 8
@@ -45,7 +57,9 @@ def outputFigures(outerFolderName, subfolderName):
     EXAMPLE_SIZE = 254
     numTrials = len(x)/EXAMPLE_SIZE
     for trial in range(int(numTrials)):
-        curDiff = abs(diff[trial*EXAMPLE_SIZE: (trial+1)*EXAMPLE_SIZE])
+        range_lower = trial*EXAMPLE_SIZE
+        range_upper = (trial + 1)*EXAMPLE_SIZE - 1
+        curDiff = abs(diff[range_lower: range_upper])
         loss = np.sum(curDiff)
         avgLoss = np.mean(curDiff)
         plt.plot(x, pred, label='pred')
@@ -54,10 +68,10 @@ def outputFigures(outerFolderName, subfolderName):
         plt.ylabel("Y Position")
 
         #titleString = "Merge Vehicle #" + str(trial) +  ", Loss = " + str(loss) + " ft, Avg Loss = " + str(avgLoss) + " ft"
-        titleString = "Merge Vehicle #" + str(trial) +  ", Average Loss = " + str(avgLoss) + " ft"
+        titleString = "Y Prediction - Merge Vehicle #" + str(trial) +  ", Average Loss = " + str(avgLoss) + " ft"
         plt.title(titleString)
         plt.legend()
-        plt.axis([trial*EXAMPLE_SIZE, (trial+1)*EXAMPLE_SIZE, 20, 120])
+        plt.axis([range_lower, range_upper, 20, 120])
         targetFile = subfolderName + "_trial" + str(trial)
         extension = ".png"
         targetFileName = targetFolderName + figuresFolder + targetFile + extension

@@ -18,8 +18,8 @@ class vehicle:
             self.y = augArray[5]
             self.Vy = augArray[11]
             self.Ay = augArray[12]
-            self.Vx = augArray[18]
-            self.Ax = augArray[19]
+            self.Vx = float("{0:.2f}".format(float(augArray[18])))
+            self.Ax = float("{0:.2f}".format(float(augArray[19])))
             self.lane = augArray[13]
             self.timeHeadway = augArray[16]
             self.spaceHeadway = augArray[17]
@@ -34,18 +34,8 @@ class vehicle:
             self.Ay = augArray[6]
             self.Vx = augArray[7]
             self.Ax = augArray[8]
-
-            # self.lane = augArray[13]
-            # self.time = augArray[3]
-            # self.globalX = augArray[6]
-            # self.globalY = augArray[7]
-            # self.vLength = augArray[8]
-            # self.vWidth = augArray[9]
-            # self.vClass = augArray[10]
-            # self.precedingVID = augArray[14]
-            # self.followingVID = augArray[15]
-            self.spaceHeadway = augArray[16]
-            self.timeHeadway = augArray[17]
+            self.timeHeadway = augArray[9]
+            self.SpaceHeadway = augArray[10]
 
         """
         Uncomment out depending on which model we're running
@@ -72,21 +62,17 @@ class vehicle:
         return self.Vy
     def getAy(self):
         return self.Vy
+    def getLane(self):
+        return self.lane
+    def getTimeHeadway(self):
+        return self.timeHeadway
+    def getSpaceHeadway(self):
+        return self.getSpaceHeadway
     def getTrajectory(self):
         return [self.x, self.y, self.Vx, self.Vy, self.Ax, self.Ay]
     def getGridInfo(self):
         return self.GridInfo
     def getGridInfoLen(self):
         return len(self.GridInfo)
-    # def returnCompressedArray(self):
-    #     return []
-    #     self.vid = augArray[0]
-    #     self.fid = augArray[1]
-    #     self.numFrames = augArray[2]
-    #     self.x = augArray[4]
-    #     self.y = augArray[5]
-    #     self.Vy = augArray[11]
-    #     self.Ay = augArray[12]
-    #     self.Vx = augArray[18]
-    #     self.Ax = augArray[19]
-    #     self.lane = augArray[13]
+    def returnCompressedArray(self):
+        return [self.vid, self.fid, self.numFrames, self.x, self.y, self.Vy, self.Ay, self.Vx, self.Ax, self.lane, self.timeHeadway, self.spaceHeadway]
