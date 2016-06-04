@@ -202,13 +202,14 @@ that location.
 
 def FrameToGrid(frame, mean_centered):
     #Creates grid determined by DIV numbers in constants.py
-    #dummyData = frame[(frame.keys()[0])]
-    #dummyVehicle = v.vehicle(dummyData)
-
-    grid = np.zeros((c.X_DIV + 2, c.Y_DIV + 2, 3))#dummyVehicle.getGridInfoLen())) # is number of elems in trajectory info
+    started = False    
+    grid = np.zeros((c.X_DIV , c.Y_DIV , 3))#len(dummyVehicle.GridInfo)) # is number of elems in trajectory info
     for vid in frame:
         vehicleData = frame[vid]
         veh = v.vehicle(vehicleData)
+        if not started:
+            grid = np.zeros((c.X_DIV , c.Y_DIV , len(veh.GridInfo)))
+            started = True
         if not InGridBounds(veh.getX(), veh.getY()):
             continue
         # Scales the grid into the desired window - check constants.py

@@ -48,7 +48,7 @@ class vehicle:
         Uncomment out depending on which model we're running
         This is what you should change to change what's included in the grid.
         """
-        self.GridInfo = [1, self.Vx, self.Ax]#, self.spaceHeadway]
+        self.GridInfo = [1, self.Vx, self.Ax]#, self.Vy, self.Ay]#, self.spaceHeadway]
         #self.GridInfo = [1, self.Vx, self.Ax]
 
     

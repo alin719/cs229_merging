@@ -80,16 +80,7 @@ def saveModelStuff(model, modelType, Xtest, ytest, Xtrain, ytrain, filename): #m
     print('model ', modelType, ': score = ', score, 'train_score = ', check)
     
 
-#actual learn stuff
-# def saveModelStuff(model, modelType='SVM', Xtest, ytest, filename):
-#     predictions = model.predict(Xtest)
-#     score = svmR.score(Xtest,ytest)
 
-
-#actual learn stuff
-#diff = ytest-np.array(predictions)
-#norm = np.linalg.norm(diff)
-#outputsSVM = [['def','def',score,check,norm]] #already been computed
 '''svmR = svm.SVR(cache_size=2500) #default,
 print("Fitting default model...", time.ctime())
 svmR.fit(Xtrain,ytrain)
@@ -97,9 +88,9 @@ modelType = 'SVM-1-0.1-PREDICT-'+predict
 if mean_centered==1:
     modelType = modelType + '-mean_centered'
 saveModelStuff(svmR, modelType, Xtest, ytest, Xtrain, ytrain, filename)'''
-for penalties in [1, 1000]: # this now includes default
-    for eps in [.1, .0000001]:
-        svmR = svm.SVR(C=penalties,epsilon=eps,cache_size=2500) #kernel='rbf',
+for penalties in [1]: # this now includes default
+    for eps in [.1]:
+        svmR = svm.SVR(C=penalties,epsilon=eps,cache_size=1500) #kernel='rbf',
         print("Fitting svm model...", time.ctime())
         svmR.fit(Xtrain,ytrain)
         model_type = 'SVM-'+str(penalties)+'-'+str(eps)+'-PREDICT-'+predict
@@ -115,15 +106,11 @@ if mean_centered==1:
     modelType = modelType + '-mean_centered'
 
 saveModelStuff(linmod1, modelType, Xtest, ytest, Xtrain, ytrain, filename)
-#from sklearn import linear_model
-#linmod1 = linear_model.LinearRegression()
-#linmod1.fit(Xtrain, ytrain)
 
 
 
 
-'''#followed advicef rom http://stackoverflow.com/questions/34475245/sklearn-svm-svr-and-svc-getting-the-same-prediction-for-every-input
-#Doesnt seem to be working though. Myabe you can take a crack at it?
+'''#followed advice from http://stackoverflow.com/questions/34475245/sklearn-svm-svr-and-svc-getting-the-same-prediction-for-every-input
 for i in range(len(ytrain[0])):
     #train model on Xtrain, ytrain[:,i]
     svmR.fit(Xtrain,ytrain[:,i])
@@ -141,19 +128,4 @@ print(diff)
 print(norm)
 print (scores)
 print (max(scores))
-print (min(scores))
-    
-from sklearn import linear_model
-linmod1 = linear_model.LinearRegression()
-linmod1.fit(Xtrain, ytrain)
-predictions = linmod1.predict(Xtest)
-score = (linmod1.score(Xtest,ytest))
-check = (linmod1.score(Xtrain,ytrain))
-if numUsing == 0:
-    numUsing == 'ALL'
-np.savetxt(makePathMR(filename, '-ACTUALS-'+str(numUsing)), ytest)
-np.savetxt(makePathMR(filename,'-PREDICTIONS-' +str(numUsing)), predictions)
-np.savetxt(makePathMR(filename,'-SCORE-' +str(numUsing)), [score, check])
-
-from sklearn.externals import joblib
-joblib.dump(linmod1, makePathMR(filename,'-MODEL-' +str(numUsing)))'''
+print (min(scores))'''

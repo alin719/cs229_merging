@@ -37,7 +37,7 @@ def removeIDfromGrid(Frame, VID, Grid):
             Grid[indexX][indexY][0] = Grid[indexX][indexY][0]-1
             #recalculate velocities?
         else:
-            Grid[indexX][indexY] = [0,0,0]
+            Grid[indexX][indexY] = [0]*len(veh.GridInfo)
     return Grid
 
 '''Called for each merging vehicle, gets all the input data.'''
@@ -49,7 +49,8 @@ def getXInner(row,dictOfGrids, initPos, dictOfFrames):
         t_elapsed = frame-start        
         grid = dictOfGrids[frame]
         grid = removeIDfromGrid(dictOfFrames[frame],VID,grid)
-        Xrow = np.append(t_elapsed,grid.flatten())
+        additional = np.append(initPos,t_elapsed)
+        Xrow = np.append(additional,grid.flatten())
         Xrow.shape = (1,len(Xrow))
         if X_for_id.shape == (0,):
             X_for_id = Xrow
