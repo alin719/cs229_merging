@@ -27,8 +27,8 @@ def findMergers():
                                         filename) #MergeLane=7
 
 def main(argv):
-    #augmentTrajectories()
-    findMergers()
+    augmentTrajectories()
+    #findMergers()
 
 if __name__ == "__main__":
     main(sys.argv)

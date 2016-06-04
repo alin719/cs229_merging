@@ -21,6 +21,9 @@ class vehicle:
             self.Vx = augArray[18]
             self.Ax = augArray[19]
             self.lane = augArray[13]
+            self.timeHeadway = augArray[16]
+            self.spaceHeadway = augArray[17]
+
         else:
             self.vid = augArray[0]
             self.fid = augArray[1]
@@ -48,7 +51,9 @@ class vehicle:
         Uncomment out depending on which model we're running
         This is what you should change to change what's included in the grid.
         """
-        self.GridInfo = [1, self.Vx, self.Ax]#, self.Vy, self.Ay]#, self.spaceHeadway]
+        self.GridInfo = [1, self.Vx, self.Ax, self.spaceHeadway, self.timeHeadway]
+        #, self.Vy, self.Ay]#, self.spaceHeadway]
+        #idk what timeHeadway and spaceHeadway are, used both
         #self.GridInfo = [1, self.Vx, self.Ax]
 
     
