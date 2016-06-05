@@ -36,7 +36,7 @@ class vehicle:
             self.Ax = augArray[8]
             self.lane = augArray[9]
             self.timeHeadway = augArray[10]
-            self.SpaceHeadway = augArray[11]
+            self.spaceHeadway = augArray[11]
 
         """
         Uncomment out depending on which model we're running
@@ -47,6 +47,8 @@ class vehicle:
         #, self.Vy, self.Ay]#, self.spaceHeadway]
         #idk what timeHeadway and spaceHeadway are, used both
         #self.GridInfo = [1, self.Vx, self.Ax]
+    def getClusteringFeatures(self):
+        return [self.Vx, self.Ax, self.Vy, self.Ay, self.timeHeadway, self.spaceHeadway]
 
     
     def getX(self):

@@ -36,8 +36,9 @@ def outputFigures(outerFolderName, subfolderName):
     figuresFolder = "Figures/"
 
     #Comment the following line out to not remove folders.
-    shutil.rmtree(targetFolderName + figuresFolder)
-
+    if os.path.exists(targetFolderName + figuresFolder):
+        #shutil.rmtree(targetFolderName + figuresFolder)
+        continue
     if not os.path.exists(targetFolderName + figuresFolder):
         os.makedirs(targetFolderName + figuresFolder)
     else:
@@ -85,6 +86,6 @@ def outputFigures(outerFolderName, subfolderName):
     print("This took ", end - start , " seconds.")
 
 #Example usage
-outerFolderName = "results/Trial1/"
+outerFolderName = "results/6_3/"
 for subfolder in os.listdir(outerFolderName):
     outputFigures(outerFolderName, subfolder)
