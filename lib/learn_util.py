@@ -69,10 +69,10 @@ def getXInner(row,dictOfGrids, initPos, dictOfFrames, compressed):
     return (X_for_id)
 
 '''Gets ground truths for each merge vehicle'''
-def getYInner(row, dictOfFrames, predict):
+def getYInner(row, dictOfFrames, predict, compressed):
     y_for_id = np.array([]) #this will have numFrames rows and 1 column
     for frame in range(row[1],row[2]):
-        veh = dictOfFrames[frame]
+        veh = v.vehicle(dictOfFrames[frame], compressed)
         if predict == 'Y':
             yrow = veh.y
         elif predict == 'X':
@@ -133,10 +133,114 @@ def getX(filename, trainIDs, testIDs, mean_centered):
         it += 1
         print(Xtrain.shape)
     return Xtrain, Xtest
+
+def getXClusters(filename, trainIDs, testIDs, mean_centered, clusterIDs0, clusterIDs1, clusterIDs2):
+    #filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
+    path = os.getcwd()+'/'
+    compressed = 'compressed' in filename
+    frameDict = futil.LoadDictFromTxt(path+filename, 'frame')
+    print("Gotten frameDict",time.ctime())
+    dictOfGrids = futil.GetGridsFromFrameDict(frameDict, mean_centered, compressed)
+    print("Gotten dictOfGrids",time.ctime())
+    #filepath = makePathMR(filename, '-mergerMinRanges')
+    filepath = makeFullPath(filename, '-mergerRanges.txt')
+    MR = np.loadtxt(filepath, dtype='int')
+    '''MR=MergeRanges. MR[:,0]=merge ids, MR[:,1]=start frame, MR[:,2] = end'''
+    print ("Done loading in getX", time.ctime())
+    start = getStartVals(filename)    
+    Xtrain1, Xtrain2, Xtrain0 = np.array([])   #will have numTrain*numFrames rows and size(grid)+1 columns
+    Xtest1, Xtest2, Xtest0 = np.array([])
+    it = 0
+    trainEmpty = [True]*3
+    testEmpty = [True]*3
+    if not numUsing == 0:
+        MR = MR[:numUsing]
+    for row in MR:
+        thisStart = start[it]
+        XVID = sparse.csr_matrix(np.ascontiguousarray(getXInner(row, dictOfGrids,thisStart,frameDict, compressed)))
+        if row[0] in trainIDs:
+            if row[0] in clusterIDs0:
+                if trainEmpty[0] == True:
+                    Xtrain0 = XVID
+                    trainEmpty[0] = False
+                else:
+                    Xtrain0 = sparse.vstack((Xtrain0,XVID))#,axis=0)
+            elif row[0] in clusterIDs1:
+                if trainEmpty[1] == True:
+                    Xtrain1 = XVID
+                    trainEmpty[1] = False
+                else:
+                    Xtrain1 = sparse.vstack((Xtrain1,XVID))#,axis=0)
+            elif row[0] in clusterIDs2:
+                if trainEmpty[2] == True:
+                    Xtrain1 = XVID
+                    trainEmpty[2] = False
+                else:
+                    Xtrain1 = sparse.vstack((Xtrain2,XVID))#,axis=0)
+            print("Finished getting X data for Merger with VID:",row[0]," and it is a training example", time.ctime())
+        else:
+            if row[0] in clusterIDs0:
+                if testEmpty[0] == True:
+                    Xtest0 = XVID
+                    testEmpty[0] = False
+                else:
+                    Xtest0 = sparse.vstack((Xtest0,XVID))#,axis=0)
+            elif row[0] in clusterIDs1:
+                if testEmpty[1] == True:
+                    Xtest1 = XVID
+                    testEmpty[1] = False
+                else:
+                    Xtest1 = sparse.vstack((Xtest1,XVID))#,axis=0)
+            elif row[0] in clusterIDs2:
+                if testEmpty[2] == True:
+                    Xtest1 = XVID
+                    testEmpty[2] = False
+                else:
+                    Xtest1 = sparse.vstack((Xtest2,XVID))#,axis=0)
+                #Xtest = sparse.vstack((Xtest,XVID))#np.append(Xtest,XVID,axis=0)
+            print("Finished getting X data for Merger with VID:",row[0]," and it is a test example")
+        it += 1
+    return Xtrain0, Xtrain1, Xtrain2, Xtest0, Xtest1, Xtest2
     
+def getYClusters(filename, trainIDs, testIDs, predict, clusterIDs0, clusterIDs1, clusterIDs2):
+    path = os.getcwd()+'/'
+    IDDict = futil.LoadDictFromTxt(path+filename, 'vid')
+    compressed = 'compressed' in filename
+    #filepath = makePathMR(filename, '-mergerMinRanges')
+    filepath = makeFullPath(filename, '-mergerRanges.txt')
+    MR = np.loadtxt(filepath, dtype='int')
+    Ytrain0, Ytrain1, Ytrain2 = np.array([])    #will have numTrain*numFrames rows and 1 column
+    Ytest0, Ytest1, Ytest2 = np.array([])
+    if not numUsing == 0:
+        MR = MR[:numUsing]
+    for row in MR:
+        YVID = np.ascontiguousarray(getYInner(row,IDDict[row[0]], predict, compressed))
+        if row[0] in trainIDs:
+            if row[0] in clusterIDs0:
+                Ytrain0=append(Ytrain0,YVID)
+            elif row[0] in clusterIDs1:
+                Ytrain0=append(Ytrain1,YVID)
+            elif row[0] in clusterIDs2:
+                Ytrain0=append(Ytrain2,YVID)
+             #uses append because Y is small in memory
+            print("Finished getting Y data for Merger with VID:",row[0]," and it is a training example")
+        else:
+            if row[0] in clusterIDs0:
+                Ytest0=append(Ytest0,YVID)
+            elif row[0] in clusterIDs1:
+                Ytest0=append(Ytest1,YVID)
+            elif row[0] in clusterIDs2:
+                Ytest0=append(Ytest2,YVID)
+            #Ytest=append(Ytest,YVID)
+            print("Finished getting Y data for Merger with VID:",row[0]," and it is a test example")
+    return np.ascontiguousarray(Ytrain0),np.ascontiguousarray(Ytrain1), 
+                np.ascontiguousarray(Ytrain2), np.ascontiguousarray(Ytest0),
+                np.ascontiguousarray(Ytest1), np.ascontiguousarray(Ytest2)
+
 def getY(filename, trainIDs, testIDs, predict):
     path = os.getcwd()+'/'
     IDDict = futil.LoadDictFromTxt(path+filename, 'vid')
+    compressed = 'compressed' in filename
     #filepath = makePathMR(filename, '-mergerMinRanges')
     filepath = makeFullPath(filename, '-mergerRanges.txt')
     MR = np.loadtxt(filepath, dtype='int')
@@ -145,7 +249,7 @@ def getY(filename, trainIDs, testIDs, predict):
     if not numUsing == 0:
         MR = MR[:numUsing]
     for row in MR:
-        YVID = np.ascontiguousarray(getYInner(row,IDDict[row[0]], predict))
+        YVID = np.ascontiguousarray(getYInner(row,IDDict[row[0]], predict, compressed))
         if row[0] in trainIDs:
             Ytrain=append(Ytrain,YVID) #uses append because Y is small in memory
             print("Finished getting Y data for Merger with VID:",row[0]," and it is a training example")
@@ -200,7 +304,6 @@ def loadTrainTestData(filename):
     testIDs = np.loadtxt(filepathTest)
     return trainIDs, testIDs
 
-    
 def saveSparse(filepath, X):
     data = X.data
     indices = X.indices
@@ -239,4 +342,75 @@ def readExampleData(filename, mean_centered, predict):
     ytest = np.loadtxt(filepath_ytest)
     print("ytest loaded.",time.ctime())
     return Xtrain, ytrain, Xtest, ytest
+    
+def saveExampleDataClusters(filename, Xtrain0, Xtrain1, Xtrain2, ytrain0, ytrain1, ytrain2,
+                                       Xtest0, Xtest1, Xtest2, ytest0, ytest1, ytest2,
+                                       mean_centered, predict):
+    filepath_Xtrain = makeFullPath(filename, '-Xtrain0'+str(mean_centered))
+    saveSparse(filepath_Xtrain, Xtrain0)
+    filepath_Xtrain = makeFullPath(filename, '-Xtrain1'+str(mean_centered))
+    saveSparse(filepath_Xtrain, Xtrain1)
+    filepath_Xtrain = makeFullPath(filename, '-Xtrain2'+str(mean_centered))
+    saveSparse(filepath_Xtrain, Xtrain2)
+    
+    filepath_ytrain = makeFullPath(filename, '-ytrain0'+str(mean_centered))
+    np.savetxt(filepath_ytrain, ytrain0)
+    filepath_ytrain = makeFullPath(filename, '-ytrain1'+str(mean_centered))
+    np.savetxt(filepath_ytrain, ytrain1)
+    filepath_ytrain = makeFullPath(filename, '-ytrain2'+str(mean_centered))
+    np.savetxt(filepath_ytrain, ytrain2)
+    
+    filepath_Xtest = makeFullPath(filename, '-Xtest0'+str(mean_centered)+predict)
+    saveSparse(filepath_Xtest, Xtest0)
+    filepath_Xtest = makeFullPath(filename, '-Xtest1'+str(mean_centered)+predict)
+    saveSparse(filepath_Xtest, Xtest1)
+    filepath_Xtest = makeFullPath(filename, '-Xtest2'+str(mean_centered)+predict)
+    saveSparse(filepath_Xtest, Xtest2)
+    
+    filepath_ytest = makeFullPath(filename, '-ytest0'+str(mean_centered)+predict)
+    np.savetxt(filepath_ytest, ytest0)
+    filepath_ytest = makeFullPath(filename, '-ytest1'+str(mean_centered)+predict)
+    np.savetxt(filepath_ytest, ytest1)
+    filepath_ytest = makeFullPath(filename, '-ytest2'+str(mean_centered)+predict)
+    np.savetxt(filepath_ytest, ytest2)
+    
+    
+def readExampleDataClusters(filename, mean_centered, predict):
+    filepath_Xtrain0 = makeFullPath(filename, '-Xtrain0'+str(mean_centered))
+    Xtrain0 = loadSparse(filepath_Xtrain0)
+    filepath_Xtrain1 = makeFullPath(filename, '-Xtrain1'+str(mean_centered))
+    Xtrain1 = loadSparse(filepath_Xtrain1)
+    filepath_Xtrain2 = makeFullPath(filename, '-Xtrain2'+str(mean_centered))
+    Xtrain2 = loadSparse(filepath_Xtrain2)
+    print("Xtrain loaded.",time.ctime())
+    
+    filepath_Xtest0 = makeFullPath(filename, '-Xtest0'+str(mean_centered))
+    Xtest0 = loadSparse(filepath_Xtest0)
+    filepath_Xtest1 = makeFullPath(filename, '-Xtest1'+str(mean_centered))
+    Xtest1 = loadSparse(filepath_Xtest1)
+    filepath_Xtest2 = makeFullPath(filename, '-Xtest2'+str(mean_centered))
+    Xtest2 = loadSparse(filepath_Xtest2)
+    print("Xtest loaded.",time.ctime())
+    
+    filepath_ytrain0 = makeFullPath(filename, '-ytrain0'+str(mean_centered)+predict)
+    ytrain0 = np.loadtxt(filepath_ytrain0)
+    filepath_ytrain1 = makeFullPath(filename, '-ytrain1'+str(mean_centered)+predict)
+    ytrain1 = np.loadtxt(filepath_ytrain1)
+    filepath_ytrain2 = makeFullPath(filename, '-ytrain2'+str(mean_centered)+predict)
+    ytrain2 = np.loadtxt(filepath_ytrain2)
+    print("ytrain loaded.",time.ctime())
+    
+    filepath_ytest0 = makeFullPath(filename, '-ytest0'+str(mean_centered)+predict)
+    ytest0 = np.loadtxt(filepath_ytest0)
+    filepath_ytest1 = makeFullPath(filename, '-ytest1'+str(mean_centered)+predict)
+    ytest1 = np.loadtxt(filepath_ytest1)
+    filepath_ytest2 = makeFullPath(filename, '-ytest2'+str(mean_centered)+predict)
+    ytest2 = np.loadtxt(filepath_ytest2)
+    print("ytest loaded.",time.ctime())
+    return Xtrain0, Xtrain1, Xtrain2, ytrain0, ytrain1, ytrain2,
+                                       Xtest0, Xtest1, Xtest2, ytest0, ytest1, ytest2
+    
+    
+    
+    
     

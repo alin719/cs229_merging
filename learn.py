@@ -24,7 +24,7 @@ filename="res/101_trajectories/101_full_trajectories_compressed.txt"
 
 repickTrainTest = 1 #1 to recalulate, 0 to load, -1 to use memory
 seed = 1
-remakeData = 1 #1 to recalulate, 0 to load, -1 to use memory
+remakeData = \21 #1 to recalulate, 0 to load, -1 to use memory
 mean_centered = 0 #1 to mean center, 0 to not mean center
 predict = 'X' #'Y' or 'X'
 
@@ -32,6 +32,10 @@ if repickTrainTest == 1:
     trainIDs, testIDs = learn_util.makeTrainTestData(filename, .75, seed)
 elif repickTrainTest == 0:
     trainIDs, testIDs = learn_util.loadTrainTestData(filename)
+
+cluster0 = np.loadtxt(learn_util.makeFullPath(filename, 'vids_cluster_0.txt'))
+cluster1 = np.loadtxt(learn_util.makeFullPath(filename, 'vids_cluster_1.txt'))
+cluster2 = np.loadtxt(learn_util.makeFullPath(filename, 'vids_cluster_2.txt'))
 
 if remakeData == 1:
     print("Recalculating all data, mean_centered =",mean_centered,"predicting",predict,"position.")
@@ -41,9 +45,23 @@ if remakeData == 1:
     ytrain, ytest = learn_util.getY(filename, trainIDs, testIDs, predict)
     print("Finished gathering and formatting Y data",time.ctime())
     learn_util.saveExampleData(filename, Xtrain, ytrain, Xtest, ytest, mean_centered, predict)
+elif remakeData == 2:
+    print("Recalculating all data WITH CLUSTERS, mean_centered =",mean_centered,"predicting",predict,"position.")
+    print("started at",time.ctime())
+    Xtrain0, Xtrain1, Xtrain2, Xtest0, Xtest1, Xtest2 = learn_util.getXClusters(filename, 
+                        trainIDs, testIDs, mean_centered, cluster0, cluster1, cluster2)
+    print("Finished gathering and formatting X data",time.ctime())
+    ytrain0, ytrain1, ytrain2, ytest0, ytest1, ytest2 = learn_util.getYClusters(filename, 
+                        trainIDs, testIDs, predict, cluster0, cluster1, cluster2)
+    print("Finished gathering and formatting Y data",time.ctime())
+    learn_util.saveExampleDataClusters(filename, Xtrain0, Xtrain1, Xtrain2, ytrain0, ytrain1, ytrain2,
+                                       Xtest0, Xtest1, Xtest2, ytest0, ytest1, ytest2,
+                                       mean_centered, predict)
 elif remakeData == 0:
     print("Loading data from file...",time.ctime())
     Xtrain, ytrain, Xtest, ytest = learn_util.readExampleData(filename, mean_centered, predict)
+elif remakeData == 3:
+    Xtrain0, Xtrain1, Xtrain2, ytrain0, ytrain1, ytrain2, Xtest0, Xtest1, Xtest2, ytest0, ytest1, ytest2 = learn_util.readExampleDataClusters(filename, mean_centered, predict)
 
 print(Xtrain.shape)
 print(Xtest.shape)
@@ -89,6 +107,8 @@ modelType = 'SVM-1-0.1-PREDICT-'+predict
 if mean_centered==1:
     modelType = modelType + '-mean_centered'
 saveModelStuff(svmR, modelType, Xtest, ytest, Xtrain, ytrain, filename)'''
+
+
 for penalties in [1]: # this now includes default
     for eps in [.1]:
         svmR = svm.SVR(C=penalties,epsilon=eps,cache_size=1500) #kernel='rbf',
