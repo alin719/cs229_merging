@@ -34,8 +34,9 @@ class vehicle:
             self.Ay = augArray[6]
             self.Vx = augArray[7]
             self.Ax = augArray[8]
-            self.timeHeadway = augArray[9]
-            self.SpaceHeadway = augArray[10]
+            self.lane = augArray[9]
+            self.timeHeadway = augArray[10]
+            self.SpaceHeadway = augArray[11]
 
         """
         Uncomment out depending on which model we're running
