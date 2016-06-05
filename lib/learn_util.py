@@ -24,12 +24,12 @@ def getStartVals(filename):
     return A[:,[constants.LocalX,constants.LocalY]]
 
 '''Removes the entry corresponding to this vid from the grid'''
-def removeIDfromGrid(Frame, VID, Grid):
+def removeIDfromGrid(Frame, VID, Grid, compressed):
     #vehicleTraj = Frame[VID]
     if VID not in Frame:
         return Grid
     vehicleData = Frame[VID]
-    veh = v.vehicle(vehicleData)
+    veh = v.vehicle(vehicleData, compressed)
     xpos = veh.x
     ypos = veh.y
     #[xpos,ypos]=vehicleTraj[[constants.LocalX,constants.LocalY]]
@@ -43,14 +43,14 @@ def removeIDfromGrid(Frame, VID, Grid):
     return Grid
 
 '''Called for each merging vehicle, gets all the input data.'''
-def getXInner(row,dictOfGrids, initPos, dictOfFrames):
+def getXInner(row,dictOfGrids, initPos, dictOfFrames, compressed):
     VID = row[0]
     start = row[1]
     X_for_id = np.array([]) #This will have numFrames rows and sizeGrid+1 columns
     for frame in range(row[1],row[2]):
         t_elapsed = frame-start        
         grid = dictOfGrids[frame]
-        grid = removeIDfromGrid(dictOfFrames[frame],VID,grid)
+        grid = removeIDfromGrid(dictOfFrames[frame],VID,grid, compressed)
         
         #grid2 = dictOfGrids[frame-10]
         #grid2 = removeIDfromGrid(dictOfFrames[frame-10],VID,grid)
@@ -72,10 +72,11 @@ def getXInner(row,dictOfGrids, initPos, dictOfFrames):
 def getYInner(row, dictOfFrames, predict):
     y_for_id = np.array([]) #this will have numFrames rows and 1 column
     for frame in range(row[1],row[2]):
+        veh = dictOfFrames[frame]
         if predict == 'Y':
-            yrow = dictOfFrames[frame][[constants.LocalY]]#,constants.LocalX]])
+            yrow = veh.y
         elif predict == 'X':
-            yrow = dictOfFrames[frame][[constants.LocalX]]#,constants.LocalX]])
+            yrow = veh.x
         else:
             print("ERROR: invalid prediction request:", predict)
             return None
@@ -94,9 +95,9 @@ def append(orig, add, axisNum=0):
 def getX(filename, trainIDs, testIDs, mean_centered):
     #filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
     path = os.getcwd()+'/'
+    compressed = 'compressed' in filename
     frameDict = futil.LoadDictFromTxt(path+filename, 'frame')
     print("Gotten frameDict",time.ctime())
-    compressed = 'compressed' in filename
     dictOfGrids = futil.GetGridsFromFrameDict(frameDict, mean_centered, compressed)
     print("Gotten dictOfGrids",time.ctime())
     #filepath = makePathMR(filename, '-mergerMinRanges')
@@ -114,7 +115,7 @@ def getX(filename, trainIDs, testIDs, mean_centered):
         MR = MR[:numUsing]
     for row in MR:
         thisStart = start[it]
-        XVID = sparse.csr_matrix(np.ascontiguousarray(getXInner(row, dictOfGrids,thisStart,frameDict)))
+        XVID = sparse.csr_matrix(np.ascontiguousarray(getXInner(row, dictOfGrids,thisStart,frameDict, compressed)))
         if row[0] in trainIDs:
             if  trainEmpty == True:
                 Xtrain = XVID
