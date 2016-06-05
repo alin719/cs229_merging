@@ -156,6 +156,21 @@ def GetGridIndices(givenX, givenY):
 
 
 """
+Function: getGridMeans
+
+Returns the means of each column vector at each point in the grid, over
+the number of vehicles.
+
+"""
+def getGridMeans(grid):
+    sum1 = np.sum(grid,1)
+    sum2 = np.sum(sum1, 0)
+    numVehicles = sum2[0]
+    means = sum2 / numVehicles
+    return means
+
+
+"""
 Function: MeanCenterGrid
 
 Takes in a grid, and subtracts the mean of all values besides #vehicles.
@@ -164,10 +179,7 @@ Takes in a grid, and subtracts the mean of all values besides #vehicles.
 
 def MeanCenterGrid(grid):
     x, y, z = grid.shape
-    sum1 = np.sum(grid,1)
-    sum2 = np.sum(sum1, 0)
-    numVehicles = sum2[0]
-    means = sum2 / numVehicles
+    means = getGridMeans(grid)
     means[0] = 0
     for i in range(x):
         for j in range(y):
