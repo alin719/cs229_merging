@@ -9,10 +9,10 @@ from lib import frame_util as futil
 import numpy as np
 import os
 from scipy import sparse
-from random import random
 from lib import constants
 from lib import vehicleclass as v
 import time
+import random
 
 
 numUsing = 0 # 0 to use all
@@ -52,11 +52,12 @@ def getXInner(row,dictOfGrids, initPos, dictOfFrames):
         grid = dictOfGrids[frame]
         grid = removeIDfromGrid(dictOfFrames[frame],VID,grid)
         
-        grid2 = dictOfGrids[frame-10]
-        grid2 = removeIDfromGrid(dictOfFrames[frame-10],VID,grid)
+        #grid2 = dictOfGrids[frame-10]
+        #grid2 = removeIDfromGrid(dictOfFrames[frame-10],VID,grid)
         
-        additional = np.append(t_elapsed, grid2.flatten())
-        #additional = t_elapsed #np.append(initPos,t_elapsed)
+        #additional = np.append(t_elapsed, grid2.flatten())
+        additional = np.append(initPos,t_elapsed)
+        #additional = t_elapsed        
         Xrow = np.append(additional,grid.flatten())
         Xrow.shape = (1,len(Xrow))
         if X_for_id.shape == (0,):
@@ -177,11 +178,11 @@ def makeTrainTestData(filename, portionTrain, seed=None):
     filepath = makeFullPath(filename, '-mergerRanges.txt')
     MR = np.loadtxt(filepath, dtype='int')
     traintest = [[],[]]
-    random.seed([seed])
+    random.seed(seed)
     if not numUsing == 0:
         MR = MR[:numUsing]
     for row in MR:
-        traintest[random() > portionTrain].append(row[0])
+        traintest[random.random() > portionTrain].append(row[0])
     train = traintest[0]
     test = traintest[1]
     filepathTrain = makeFullPath(filename, 'trainIDs.txt')

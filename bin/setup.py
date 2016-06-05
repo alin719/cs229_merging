@@ -22,13 +22,18 @@ def findMergers():
         print("Starting merge stuff for:", filepath+'.txt')
         #mm.doMinRangesAndStartForMerges(filepath, constants.LaneID, constants.VehicleID,
         #                                constants.FrameID, constants.TotFrames) #MergeLane=7
-        mm.doRangesAndStartForMerges(filepath, constants.LaneID, constants.VehicleID,
+        if 'compressed' in filename:
+                mm.doRangesAndStartForMerges(filepath, 9, constants.VehicleID,
+                                        constants.FrameID, constants.TotFrames,
+                                        filename) #MergeLane=7
+        else:
+            mm.doRangesAndStartForMerges(filepath, constants.LaneID, constants.VehicleID,
                                         constants.FrameID, constants.TotFrames,
                                         filename) #MergeLane=7
 
 def main(argv):
-    augmentTrajectories()
-    #findMergers()
+    #augmentTrajectories()
+    findMergers()
 
 if __name__ == "__main__":
     main(sys.argv)
