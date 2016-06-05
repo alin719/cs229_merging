@@ -129,12 +129,12 @@ of the work
 """
 
 #each vehicle has its full entry in the dict.
-def GetGridsFromFrameDict(frameDict, mean_centered):
+def GetGridsFromFrameDict(frameDict, mean_centered, compressed=False):
     gridDict = {}
     counter = 0
     for i in frameDict:
         frame = frameDict[i]
-        grid = FrameToGrid(frame, mean_centered)
+        grid = FrameToGrid(frame, mean_centered, compressed)
         gridDict[i] = deepcopy(grid)
         counter += 1
         if counter % 500 == 0:
@@ -212,13 +212,13 @@ that location.
 
 """
 
-def FrameToGrid(frame, mean_centered):
+def FrameToGrid(frame, mean_centered, compressed=False):
     #Creates grid determined by DIV numbers in constants.py
     started = False    
     grid = np.zeros((c.X_DIV , c.Y_DIV , 3))#len(dummyVehicle.GridInfo)) # is number of elems in trajectory info
     for vid in frame:
         vehicleData = frame[vid]
-        veh = v.vehicle(vehicleData)
+        veh = v.vehicle(vehicleData, compressed)
         if not started:
             grid = np.zeros((c.X_DIV , c.Y_DIV , len(veh.GridInfo)))
             started = True

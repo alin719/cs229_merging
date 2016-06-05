@@ -20,9 +20,10 @@ import os
 
 #This will probably have to be made better at some point
 filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
+filename="res/101_trajectories/101_full_trajectories_compressed.txt"
 
-repickTrainTest = 0 #1 to recalulate, 0 to load, -1 to use memory
-seed = None
+repickTrainTest = 1 #1 to recalulate, 0 to load, -1 to use memory
+seed = 1
 remakeData = 1 #1 to recalulate, 0 to load, -1 to use memory
 mean_centered = 0 #1 to mean center, 0 to not mean center
 predict = 'X' #'Y' or 'X'
