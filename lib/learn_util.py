@@ -96,7 +96,8 @@ def getX(filename, trainIDs, testIDs, mean_centered):
     path = os.getcwd()+'/'
     frameDict = futil.LoadDictFromTxt(path+filename, 'frame')
     print("Gotten frameDict",time.ctime())
-    dictOfGrids = futil.GetGridsFromFrameDict(frameDict, mean_centered)
+    compressed = 'compressed' in filename
+    dictOfGrids = futil.GetGridsFromFrameDict(frameDict, mean_centered, compressed)
     print("Gotten dictOfGrids",time.ctime())
     #filepath = makePathMR(filename, '-mergerMinRanges')
     filepath = makeFullPath(filename, '-mergerRanges.txt')
