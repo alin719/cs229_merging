@@ -215,12 +215,12 @@ that location.
 def FrameToGrid(frame, mean_centered, compressed=False):
     #Creates grid determined by DIV numbers in constants.py
     started = False    
-    grid = np.zeros((c.X_DIV , c.Y_DIV , 3))#len(dummyVehicle.GridInfo)) # is number of elems in trajectory info
+    grid = np.zeros((c.X_DIV +1, c.Y_DIV +1, 3))#len(dummyVehicle.GridInfo)) # is number of elems in trajectory info
     for vid in frame:
         vehicleData = frame[vid]
         veh = v.vehicle(vehicleData, compressed)
         if not started:
-            grid = np.zeros((c.X_DIV , c.Y_DIV , len(veh.GridInfo)))
+            grid = np.zeros((c.X_DIV +1, c.Y_DIV +1 , len(veh.GridInfo)))
             started = True
         if not InGridBounds(veh.getX(), veh.getY()):
             continue
