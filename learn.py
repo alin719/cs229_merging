@@ -24,7 +24,7 @@ filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
 
 repickTrainTest = 1 #1 to recalulate, 0 to load, -1 to use memory,
 seed = 1
-remakeData = 4 #1 to recalulate, 0 to load, -1 to use memory
+remakeData = 1 #1 to recalulate, 0 to load, -1 to use memory
                #2 for clustered recalc, 3 for clustered read, 4 clustered mem
 mean_centered = 0 #1 to mean center, 0 to not mean center
 predict = 'X' #'Y' or 'X'
