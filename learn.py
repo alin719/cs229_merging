@@ -137,10 +137,12 @@ else:
     print(Xtest0.shape)
     print(ytrain0.shape)
     print(ytest0.shape)
+    
     print(Xtrain1.shape)
     print(Xtest1.shape)
     print(ytrain1.shape)
     print(ytest1.shape)
+    
     print(Xtrain2.shape)
     print(Xtest2.shape)
     print(ytrain2.shape)
@@ -157,6 +159,7 @@ else:
         model_type = model_type + '-mean_centered'
     saveModelStuff(svmR, model_type , Xtest0, ytest0, Xtrain0, ytrain0, filename, clustered)
     modelType = 'linReg-PREDICT-'+predict+'CLUSTER0'
+    linmod.fit(Xtrain0,ytrain0)
     saveModelStuff(linmod, modelType , Xtest0, ytest0, Xtrain0, ytrain0, filename, clustered)
     print("Making svm for cluster 1")
     print("Fitting svm model...", time.ctime())
@@ -166,6 +169,7 @@ else:
         model_type = model_type + '-mean_centered'
     saveModelStuff(svmR, model_type, Xtest1, ytest1, Xtrain1, ytrain1, filename, clustered)
     modelType = 'linReg-PREDICT-'+predict+'CLUSTER1'
+    linmod.fit(Xtrain1,ytrain1)
     saveModelStuff(linmod, modelType, Xtest1, ytest1, Xtrain1, ytrain1, filename, clustered)
 
     print("Making svm for cluster 2")
@@ -176,6 +180,7 @@ else:
         model_type = model_type + '-mean_centered'
     saveModelStuff(svmR, model_type, Xtest2, ytest2, Xtrain2, ytrain2, filename, clustered)
     modelType = 'linReg-PREDICT-'+predict+'CLUSTER2'
+    linmod.fit(Xtrain2,ytrain2)
     saveModelStuff(linmod, modelType, Xtest2, ytest2, Xtrain2, ytrain2, filename, clustered)
 
 
