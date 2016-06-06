@@ -20,11 +20,12 @@ import os
 
 #This will probably have to be made better at some point
 filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
-filename="res/101_trajectories/101_full_trajectories_compressed.txt"
+#filename="res/101_trajectories/101_full_trajectories_compressed.txt"
 
-repickTrainTest = 1 #1 to recalulate, 0 to load, -1 to use memory
+repickTrainTest = 1 #1 to recalulate, 0 to load, -1 to use memory,
 seed = 1
-remakeData = \21 #1 to recalulate, 0 to load, -1 to use memory
+remakeData = 4 #1 to recalulate, 0 to load, -1 to use memory
+               #2 for clustered recalc, 3 for clustered read, 4 clustered mem
 mean_centered = 0 #1 to mean center, 0 to not mean center
 predict = 'X' #'Y' or 'X'
 
@@ -63,17 +64,17 @@ elif remakeData == 0:
 elif remakeData == 3:
     Xtrain0, Xtrain1, Xtrain2, ytrain0, ytrain1, ytrain2, Xtest0, Xtest1, Xtest2, ytest0, ytest1, ytest2 = learn_util.readExampleDataClusters(filename, mean_centered, predict)
 
-print(Xtrain.shape)
-print(Xtest.shape)
-print(ytrain.shape)
-print(ytest.shape)
+
 #otherwise, read from files
 
 
     
 #run this after the model is fit
 #if using a model with specific values (like penalties), include that in type
-def saveModelStuff(model, modelType, Xtest, ytest, Xtrain, ytrain, filename): #modelType = 'SVM'     
+def saveModelStuff(model, modelType, Xtest, ytest, Xtrain, ytrain, filename, clustered=False): #modelType = 'SVM'
+    if Xtest.shape == (0,):
+        print("Xtest is empty")
+        return
     print("Done fitting model, getting predictions...", time.ctime())
     predictions = model.predict(Xtest)
     print ("Done with predictions, scoring...", time.ctime())    
@@ -107,26 +108,75 @@ modelType = 'SVM-1-0.1-PREDICT-'+predict
 if mean_centered==1:
     modelType = modelType + '-mean_centered'
 saveModelStuff(svmR, modelType, Xtest, ytest, Xtrain, ytrain, filename)'''
+clustered = (remakeData >=2)
 
+if not clustered:
+    print(Xtrain.shape)
+    print(Xtest.shape)
+    print(ytrain.shape)
+    print(ytest.shape)
+    for penalties in [1]: # this now includes default
+        for eps in [.1]:
+            svmR = svm.SVR(C=penalties,epsilon=eps,cache_size=1500) #kernel='rbf',
+            print("Fitting svm model...", time.ctime())
+            svmR.fit(Xtrain,ytrain)
+            model_type = 'SVM-'+str(penalties)+'-'+str(eps)+'-PREDICT-'+predict
+            if mean_centered==1:
+                model_type = model_type + '-mean_centered'
+            saveModelStuff(svmR, model_type , Xtest, ytest, Xtrain, ytrain, filename, clustered)
 
-for penalties in [1]: # this now includes default
-    for eps in [.1]:
-        svmR = svm.SVR(C=penalties,epsilon=eps,cache_size=1500) #kernel='rbf',
-        print("Fitting svm model...", time.ctime())
-        svmR.fit(Xtrain,ytrain)
-        model_type = 'SVM-'+str(penalties)+'-'+str(eps)+'-PREDICT-'+predict
-        if mean_centered==1:
-            modelType = model_type + '-mean_centered'
-        saveModelStuff(svmR, model_type , Xtest, ytest, Xtrain, ytrain, filename)
+    linmod1 = linear_model.LinearRegression() #aka least squares
+    print("Fitting linreg model...", time.ctime())
+    linmod1.fit(Xtrain, ytrain)
+    modelType = 'linReg-PREDICT-'+predict
+    if mean_centered==1:
+        modelType = modelType + '-mean_centered'
+    saveModelStuff(linmod1, modelType, Xtest, ytest, Xtrain, ytrain, filename, clustered)
+else:
+    print(Xtrain0.shape)
+    print(Xtest0.shape)
+    print(ytrain0.shape)
+    print(ytest0.shape)
+    print(Xtrain1.shape)
+    print(Xtest1.shape)
+    print(ytrain1.shape)
+    print(ytest1.shape)
+    print(Xtrain2.shape)
+    print(Xtest2.shape)
+    print(ytrain2.shape)
+    print(ytest2.shape)
+    penalties = 1
+    eps = .1
+    svmR = svm.SVR(C=penalties,epsilon=eps,cache_size=1500)
+    linmod = linear_model.LinearRegression() #aka least squares
+    print("Making svm for cluster 0")
+    print("Fitting svm model...", time.ctime())
+    svmR.fit(Xtrain0,ytrain0)
+    model_type = 'SVM-'+str(penalties)+'-'+str(eps)+'-PREDICT-'+predict+'CLUSTER0'
+    if mean_centered==1:
+        model_type = model_type + '-mean_centered'
+    saveModelStuff(svmR, model_type , Xtest0, ytest0, Xtrain0, ytrain0, filename, clustered)
+    modelType = 'linReg-PREDICT-'+predict+'CLUSTER0'
+    saveModelStuff(linmod, modelType , Xtest0, ytest0, Xtrain0, ytrain0, filename, clustered)
+    print("Making svm for cluster 1")
+    print("Fitting svm model...", time.ctime())
+    svmR.fit(Xtrain1,ytrain1)
+    model_type = 'SVM-'+str(penalties)+'-'+str(eps)+'-PREDICT-'+predict+'CLUSTER1'
+    if mean_centered==1:
+        model_type = model_type + '-mean_centered'
+    saveModelStuff(svmR, model_type, Xtest1, ytest1, Xtrain1, ytrain1, filename, clustered)
+    modelType = 'linReg-PREDICT-'+predict+'CLUSTER1'
+    saveModelStuff(linmod, modelType, Xtest1, ytest1, Xtrain1, ytrain1, filename, clustered)
 
-linmod1 = linear_model.LinearRegression() #aka least squares
-print("Fitting linreg model...", time.ctime())
-linmod1.fit(Xtrain, ytrain)
-modelType = 'linReg-PREDICT-'+predict
-if mean_centered==1:
-    modelType = modelType + '-mean_centered'
-
-saveModelStuff(linmod1, modelType, Xtest, ytest, Xtrain, ytrain, filename)
+    print("Making svm for cluster 2")
+    print("Fitting svm model...", time.ctime())
+    svmR.fit(Xtrain2,ytrain2)
+    model_type = 'SVM-'+str(penalties)+'-'+str(eps)+'-PREDICT-'+predict+'CLUSTER2'
+    if mean_centered==1:
+        model_type = model_type + '-mean_centered'
+    saveModelStuff(svmR, model_type, Xtest2, ytest2, Xtrain2, ytrain2, filename, clustered)
+    modelType = 'linReg-PREDICT-'+predict+'CLUSTER2'
+    saveModelStuff(linmod, modelType, Xtest2, ytest2, Xtrain2, ytrain2, filename, clustered)
 
 
 

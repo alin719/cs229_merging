@@ -148,8 +148,12 @@ def getXClusters(filename, trainIDs, testIDs, mean_centered, clusterIDs0, cluste
     '''MR=MergeRanges. MR[:,0]=merge ids, MR[:,1]=start frame, MR[:,2] = end'''
     print ("Done loading in getX", time.ctime())
     start = getStartVals(filename)    
-    Xtrain1, Xtrain2, Xtrain0 = np.array([])   #will have numTrain*numFrames rows and size(grid)+1 columns
-    Xtest1, Xtest2, Xtest0 = np.array([])
+    Xtrain1 = np.array([])
+    Xtrain2 = np.array([])
+    Xtrain0 = np.array([])   #will have numTrain*numFrames rows and size(grid)+1 columns
+    Xtest1 = np.array([])
+    Xtest2 = np.array([])
+    Xtest0 = np.array([])
     it = 0
     trainEmpty = [True]*3
     testEmpty = [True]*3
@@ -173,10 +177,10 @@ def getXClusters(filename, trainIDs, testIDs, mean_centered, clusterIDs0, cluste
                     Xtrain1 = sparse.vstack((Xtrain1,XVID))#,axis=0)
             elif row[0] in clusterIDs2:
                 if trainEmpty[2] == True:
-                    Xtrain1 = XVID
+                    Xtrain2 = XVID
                     trainEmpty[2] = False
                 else:
-                    Xtrain1 = sparse.vstack((Xtrain2,XVID))#,axis=0)
+                    Xtrain2 = sparse.vstack((Xtrain2,XVID))#,axis=0)
             print("Finished getting X data for Merger with VID:",row[0]," and it is a training example", time.ctime())
         else:
             if row[0] in clusterIDs0:
@@ -193,10 +197,10 @@ def getXClusters(filename, trainIDs, testIDs, mean_centered, clusterIDs0, cluste
                     Xtest1 = sparse.vstack((Xtest1,XVID))#,axis=0)
             elif row[0] in clusterIDs2:
                 if testEmpty[2] == True:
-                    Xtest1 = XVID
+                    Xtest2 = XVID
                     testEmpty[2] = False
                 else:
-                    Xtest1 = sparse.vstack((Xtest2,XVID))#,axis=0)
+                    Xtest2 = sparse.vstack((Xtest2,XVID))#,axis=0)
                 #Xtest = sparse.vstack((Xtest,XVID))#np.append(Xtest,XVID,axis=0)
             print("Finished getting X data for Merger with VID:",row[0]," and it is a test example")
         it += 1
@@ -209,8 +213,12 @@ def getYClusters(filename, trainIDs, testIDs, predict, clusterIDs0, clusterIDs1,
     #filepath = makePathMR(filename, '-mergerMinRanges')
     filepath = makeFullPath(filename, '-mergerRanges.txt')
     MR = np.loadtxt(filepath, dtype='int')
-    Ytrain0, Ytrain1, Ytrain2 = np.array([])    #will have numTrain*numFrames rows and 1 column
-    Ytest0, Ytest1, Ytest2 = np.array([])
+    Ytrain0 = np.array([]) 
+    Ytrain1 = np.array([])
+    Ytrain2 = np.array([])    #will have numTrain*numFrames rows and 1 column
+    Ytest0 = np.array([])
+    Ytest1 = np.array([]) 
+    Ytest2 = np.array([])
     if not numUsing == 0:
         MR = MR[:numUsing]
     for row in MR:
@@ -219,23 +227,21 @@ def getYClusters(filename, trainIDs, testIDs, predict, clusterIDs0, clusterIDs1,
             if row[0] in clusterIDs0:
                 Ytrain0=append(Ytrain0,YVID)
             elif row[0] in clusterIDs1:
-                Ytrain0=append(Ytrain1,YVID)
+                Ytrain1=append(Ytrain1,YVID)
             elif row[0] in clusterIDs2:
-                Ytrain0=append(Ytrain2,YVID)
+                Ytrain2=append(Ytrain2,YVID)
              #uses append because Y is small in memory
             print("Finished getting Y data for Merger with VID:",row[0]," and it is a training example")
         else:
             if row[0] in clusterIDs0:
                 Ytest0=append(Ytest0,YVID)
             elif row[0] in clusterIDs1:
-                Ytest0=append(Ytest1,YVID)
+                Ytest1=append(Ytest1,YVID)
             elif row[0] in clusterIDs2:
-                Ytest0=append(Ytest2,YVID)
+                Ytest2=append(Ytest2,YVID)
             #Ytest=append(Ytest,YVID)
             print("Finished getting Y data for Merger with VID:",row[0]," and it is a test example")
-    return np.ascontiguousarray(Ytrain0),np.ascontiguousarray(Ytrain1), 
-                np.ascontiguousarray(Ytrain2), np.ascontiguousarray(Ytest0),
-                np.ascontiguousarray(Ytest1), np.ascontiguousarray(Ytest2)
+    return np.ascontiguousarray(Ytrain0),np.ascontiguousarray(Ytrain1), np.ascontiguousarray(Ytrain2), np.ascontiguousarray(Ytest0), np.ascontiguousarray(Ytest1), np.ascontiguousarray(Ytest2)
 
 def getY(filename, trainIDs, testIDs, predict):
     path = os.getcwd()+'/'
@@ -305,6 +311,8 @@ def loadTrainTestData(filename):
     return trainIDs, testIDs
 
 def saveSparse(filepath, X):
+    if X.shape == (0,):
+        return
     data = X.data
     indices = X.indices
     indptr = X.indptr
@@ -407,8 +415,7 @@ def readExampleDataClusters(filename, mean_centered, predict):
     filepath_ytest2 = makeFullPath(filename, '-ytest2'+str(mean_centered)+predict)
     ytest2 = np.loadtxt(filepath_ytest2)
     print("ytest loaded.",time.ctime())
-    return Xtrain0, Xtrain1, Xtrain2, ytrain0, ytrain1, ytrain2,
-                                       Xtest0, Xtest1, Xtest2, ytest0, ytest1, ytest2
+    return Xtrain0, Xtrain1, Xtrain2, ytrain0, ytrain1, ytrain2, Xtest0, Xtest1, Xtest2, ytest0, ytest1, ytest2
     
     
     
