@@ -49,16 +49,22 @@ def getXInner(row,dictOfGrids, initPos, dictOfFrames, compressed):
     X_for_id = np.array([]) #This will have numFrames rows and sizeGrid+1 columns
     for frame in range(row[1],row[2]):
         t_elapsed = frame-start        
-        grid = dictOfGrids[frame]
-        grid = removeIDfromGrid(dictOfFrames[frame],VID,grid, compressed)
+        #grid = dictOfGrids[frame]
+        #grid = removeIDfromGrid(dictOfFrames[frame],VID,grid, compressed)
+        start_grid = dictOfGrids[start]
+        start_grid = removeIDfromGrid(dictOfFrames[start],VID,start_grid, compressed)
         
         #grid2 = dictOfGrids[frame-10]
-        #grid2 = removeIDfromGrid(dictOfFrames[frame-10],VID,grid)
+        #grid2 = removeIDfromGrid(dictOfFrames[frame-10],VID,grid2)
+        
+        init_grid_avg = futil.getGridMeans(dictOfGrids[frame])
         
         #additional = np.append(t_elapsed, grid2.flatten())
         additional = np.append(initPos,t_elapsed)
         #additional = t_elapsed        
-        Xrow = np.append(additional,grid.flatten())
+        Xrow = np.append(additional,start_grid.flatten())
+        #Xrow = np.append(additional,init_grid_avg)
+        #Xrow = additional
         Xrow.shape = (1,len(Xrow))
         if X_for_id.shape == (0,):
             X_for_id = Xrow

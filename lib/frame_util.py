@@ -167,6 +167,11 @@ def getGridMeans(grid):
     sum2 = np.sum(sum1, 0)
     numVehicles = sum2[0]
     means = sum2 / numVehicles
+    if numVehicles == 0:
+        print(numVehicles)
+        print(sum2)
+        print(sum1)
+        return [0]*len(means)
     return means
 
 
