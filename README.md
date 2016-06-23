@@ -1,4 +1,5 @@
 # cs229_merging
+I (Derek) just re-cloned what was submited for further use/clean up
 
 1) Setup
 
@@ -31,21 +32,7 @@ to a file or read from it, make sure to indicate which you want by
 commenting out the other option
 -Rerun it if you clear the memory or kernel at any point.
 
-TODO:
-- Write functions to save / load grids as txt files.
-- Clean this shit up.
-
  Recap:
  Current pipeline for loading grids is:
  LoadDataFromTxt -> GetGridsFromFrameDict, then access using frame IDs.
  
- filename="res/101_trajectories/aug_trajectories-0750am-0805am.txt"
-trainIDs, testIDs = learn_util.makeTrainTestData(filename, .75)
-print("adsfd")
-path = os.getcwd()+'/'
-frameDict = futil.LoadDictFromTxt(path+filename, 'frame')
-print("5412334")
-dictOfGrids = futil.GetGridsFromFrameDict(frameDict)
-print("Adfsa")
-filepath = makePathMR(filename, '-mergerMinRanges')
-MR = np.loadtxt(filepath, dtype='int')
